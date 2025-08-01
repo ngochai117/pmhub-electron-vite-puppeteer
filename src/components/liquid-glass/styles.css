@@ -132,9 +132,9 @@
     opacity: 1;
   }
 
-  [data-mode='dock'] .effect {
+  /* [data-mode='dock'] .effect {
     backdrop-filter: url(#filter) brightness(1.1) saturate(1.5);
-  }
+  } */
 
   .effect nav {
     width: 100%;
@@ -157,10 +157,10 @@
   }
 
   .effect {
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.26s ease-out;
-    height: calc(var(--height) * 1px);
-    width: calc(var(--width) * 1px);
+    /* height: calc(var(--height) * 1px);
+    width: calc(var(--width) * 1px); */
     border-radius: calc(var(--radius) * 1px);
     position: fixed;
     z-index: 999999;
@@ -168,7 +168,7 @@
       hsl(0 0% 100% / var(--frost, 0)),
       hsl(0 0% 0% / var(--frost, 0))
     );
-    backdrop-filter: url(#filter) saturate(var(--saturation, 1));
+    /* backdrop-filter: url(#filter) saturate(var(--saturation, 1)); */
     box-shadow: 0 0 2px 1px
         light-dark(
           color-mix(in oklch, canvasText, #0000 85%),
