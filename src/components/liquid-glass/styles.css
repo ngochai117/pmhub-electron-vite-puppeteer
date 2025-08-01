@@ -128,9 +128,9 @@
     border-radius: inherit;
   }
 
-  [data-icons='true'] .effect nav {
+  /* [data-icons='true'] .effect nav {
     opacity: 1;
-  }
+  } */
 
   /* [data-mode='dock'] .effect {
     backdrop-filter: url(#filter) brightness(1.1) saturate(1.5);

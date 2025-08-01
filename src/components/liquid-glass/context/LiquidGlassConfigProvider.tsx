@@ -1,6 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
 import gsap from "gsap";
-import { Draggable } from "gsap/Draggable";
 import {
   createContext,
   FC,
@@ -11,16 +10,15 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Pane } from "tweakpane";
+import { BindingParams, Pane } from "tweakpane";
 
 interface BasePreset {
-  icons: boolean;
   scale: number;
   radius: number;
   border: number;
   lightness: number;
   displace: number;
-  blend: Property.MixBlendMode;
+  blend: string;
   x: "R" | "G" | "B";
   y: "R" | "G" | "B";
   alpha: number;
@@ -38,16 +36,14 @@ export interface LiquidGlassConfig extends BasePreset {
   theme: "system" | "light" | "dark";
   debug: boolean;
   top: boolean;
-  preset: "dock" | "pill" | "bubble" | "free";
 }
 
 const base: BasePreset = {
-  icons: false,
   scale: -180,
   radius: 16,
   border: 0.07,
   lightness: 50,
-  displace: 0,
+  displace: 0.2,
   blend: "difference",
   x: "R",
   y: "B",
@@ -60,58 +56,60 @@ const base: BasePreset = {
   // these are the ones that usually change
   width: 336,
   height: 96,
-  frost: 0,
+  frost: 0.05,
 };
 
-const presets: Record<string, BasePreset> = {
-  dock: {
-    ...base,
-    width: 336,
-    height: 96,
-    displace: 0.2,
-    icons: true,
-    frost: 0.05,
-  },
-  pill: {
-    ...base,
-    width: 200,
-    height: 80,
-    displace: 0,
-    frost: 0,
-    radius: 40,
-  },
-  bubble: {
-    ...base,
-    radius: 70,
-    width: 140,
-    height: 140,
-    displace: 0,
-    frost: 0,
-  },
-  free: {
-    ...base,
-    width: 140,
-    height: 280,
-    radius: 80,
-    border: 0.15,
-    alpha: 0.74,
-    lightness: 60,
-    blur: 10,
-    displace: 0,
-    scale: -300,
-  },
-};
+// const presets: Record<string, BasePreset> = {
+//   dock: {
+//     ...base,
+//     width: 336,
+//     height: 96,
+//     displace: 0.2,
+//     frost: 0.05,
+//   },
+//   pill: {
+//     ...base,
+//     width: 200,
+//     height: 80,
+//     displace: 0,
+//     frost: 0,
+//     radius: 40,
+//   },
+//   bubble: {
+//     ...base,
+//     radius: 70,
+//     width: 140,
+//     height: 140,
+//     displace: 0,
+//     frost: 0,
+//   },
+//   free: {
+//     ...base,
+//     width: 140,
+//     height: 280,
+//     radius: 80,
+//     border: 0.15,
+//     alpha: 0.74,
+//     lightness: 60,
+//     blur: 10,
+//     displace: 0,
+//     scale: -300,
+//   },
+// };
 
 const configDefault: LiquidGlassConfig = {
-  ...presets.dock,
+  ...base,
   theme: "system",
   debug: false,
   top: false,
-  // circle, dock, freestyle, etc.
-  preset: "dock",
 };
 
 type FlatConfig = Record<string, any>;
+
+type Binding = BindingParams & {
+  key: keyof LiquidGlassConfig;
+  label?: string;
+};
 
 function extractBindings(node: any): FlatConfig {
   const result: FlatConfig = {};
@@ -135,12 +133,6 @@ const useConfig = () => {
   const [config, setConfig] = useState(configDefault);
 
   useEffect(() => {
-    gsap.set("feDisplacementMap", {
-      attr: {
-        xChannelSelector: config.x,
-        yChannelSelector: config.y,
-      },
-    });
     // buildDisplacementImage();
     gsap.set(document.documentElement, {
       "--radius": config.radius,
@@ -151,6 +143,8 @@ const useConfig = () => {
     gsap.set("feDisplacementMap", {
       attr: {
         scale: config.scale,
+        xChannelSelector: config.x,
+        yChannelSelector: config.y,
       },
     });
     gsap.set("#redchannel", {
@@ -174,10 +168,8 @@ const useConfig = () => {
       },
     });
 
-    document.documentElement.dataset.icons = config.icons;
-    document.documentElement.dataset.mode = config.preset;
-    document.documentElement.dataset.top = config.top;
-    document.documentElement.dataset.debug = config.debug;
+    document.documentElement.dataset.top = String(config.top);
+    document.documentElement.dataset.debug = String(config.debug);
     document.documentElement.dataset.theme = config.theme;
   }, [config]);
 
@@ -193,14 +185,9 @@ const useConfig = () => {
     ctrl.on("change", sync);
 
     // 🔽 Dùng mảng và loop
-    const basicBindings = [
+    const basicBindings: Binding[] = [
       { key: "debug" },
       { key: "top" },
-      {
-        key: "preset",
-        options: { dock: "dock", pill: "pill", bubble: "bubble", free: "free" },
-        label: "mode",
-      },
       {
         key: "theme",
         options: { system: "system", light: "light", dark: "dark" },
@@ -208,15 +195,14 @@ const useConfig = () => {
       },
     ];
     basicBindings.forEach(({ key, ...opts }) => {
-      ctrl.addBinding(config, key, opts);
+      ctrl.addBinding(configDefault, key, opts);
     });
 
     const settings = ctrl.addFolder({ title: "settings" });
 
-    const settingBindings = [
+    const settingBindings: Binding[] = [
       { key: "frost", min: 0, max: 1, step: 0.01 },
       { key: "saturation", min: 0, max: 2, step: 0.1 },
-      { key: "icons" },
       { key: "width", min: 80, max: 500, step: 1, label: "width (px)" },
       { key: "height", min: 35, max: 500, step: 1, label: "height (px)" },
       { key: "radius", min: 0, max: 500, step: 1, label: "radius (px)" },
@@ -262,12 +248,12 @@ const useConfig = () => {
       { key: "scale", min: -1000, max: 1000, step: 1 },
     ];
     settingBindings.forEach(({ key, ...opts }) =>
-      settings.addBinding(config, key, opts)
+      settings.addBinding(configDefault, key, opts)
     );
 
     const chromatic = settings.addFolder({ title: "chromatic" });
     ["r", "g", "b"].forEach((k) =>
-      chromatic.addBinding(config, k, {
+      chromatic.addBinding(configDefault, k as any, {
         min: -100,
         max: 100,
         step: 1,

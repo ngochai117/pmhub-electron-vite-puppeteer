@@ -15,10 +15,10 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
   const refDisplacement = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const buildDisplacementImage = () => {
-      const border = Math.min(width, height) * (config.border * 0.5);
-      console.log("size", { width, height });
-      const kids = `
+    if (!refDisplacement.current) return;
+
+    const border = Math.min(width, height) * (config.border * 0.5);
+    const kids = `
     <svg class="displacement-image" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="red" x1="100%" y1="0%" x2="0%" y2="0%">
@@ -34,20 +34,20 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
       <rect x="0" y="0" width="${width}" height="${height}" fill="black"></rect>
       <!-- red linear -->
       <rect x="0" y="0" width="${width}" height="${height}" rx="${
-        config.radius
-      }" fill="url(#red)" />
+      config.radius
+    }" fill="url(#red)" />
       <!-- blue linear -->
       <rect x="0" y="0" width="${width}" height="${height}" rx="${
-        config.radius
-      }" fill="url(#blue)" style="mix-blend-mode: ${config.blend}" />
+      config.radius
+    }" fill="url(#blue)" style="mix-blend-mode: ${config.blend}" />
       <!-- block out distortion -->
       <rect x="${border}" y="${
-        Math.min(width, height) * (config.border * 0.5)
-      }" width="${width - border * 2}" height="${height - border * 2}" rx="${
-        config.radius
-      }" fill="hsl(0 0% ${config.lightness}% / ${
-        config.alpha
-      }" style="filter:blur(${config.blur}px)" />
+      Math.min(width, height) * (config.border * 0.5)
+    }" width="${width - border * 2}" height="${height - border * 2}" rx="${
+      config.radius
+    }" fill="hsl(0 0% ${config.lightness}% / ${
+      config.alpha
+    }" style="filter:blur(${config.blur}px)" />
     </svg>
     <div class="label">
       <span>displacement image</span>
@@ -56,33 +56,19 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
       </svg>
     </div>
   `;
-      refDisplacement.current.innerHTML = kids;
+    refDisplacement.current.innerHTML = kids;
 
-      const svgEl = refDisplacement.current.querySelector(
-        ".displacement-image"
-      ); // or any other method
-      console.log(
-        "svg",
-        svgEl?.getAttribute("width"),
-        svgEl?.getAttribute("height")
-      );
-      const serialized = new XMLSerializer().serializeToString(svgEl);
-      const encoded = encodeURIComponent(serialized);
-      const dataUri = `data:image/svg+xml,${encoded}`;
+    const svgEl = refDisplacement.current.querySelector(".displacement-image");
+    if (!svgEl) return;
+    const serialized = new XMLSerializer().serializeToString(svgEl);
+    const encoded = encodeURIComponent(serialized);
+    const dataUri = `data:image/svg+xml,${encoded}`;
 
-      gsap.set(refFeImage.current, {
-        attr: {
-          href: dataUri,
-        },
-      });
-      gsap.set("feDisplacementMap", {
-        attr: {
-          xChannelSelector: config.x,
-          yChannelSelector: config.y,
-        },
-      });
-    };
-    buildDisplacementImage();
+    gsap.set(refFeImage.current, {
+      attr: {
+        href: dataUri,
+      },
+    });
   }, [config, height, width]);
 
   return (

@@ -1,19 +1,9 @@
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
-import React, {
-  memo,
-  PropsWithChildren,
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-} from "react";
-import { Pane } from "tweakpane";
+import React, { memo, PropsWithChildren, useEffect, useId } from "react";
 import LiquidGlassFilter from "./LiquidGlassFilter";
 import "./styles.css";
 import { useSize } from "../../hooks";
-import DisplacementSVG from "./DisplacementSVG";
-import { random } from "../../utils/CommonUtils";
 import { useLiquidGlassConfig } from "./context/LiquidGlassConfigProvider";
 
 interface Props extends PropsWithChildren {}
@@ -21,10 +11,9 @@ interface Props extends PropsWithChildren {}
 const LiquidGlass: React.FC<Props> = (props) => {
   const { children } = props || {};
   const { ref, size } = useSize<HTMLDivElement>();
-  const filterId = useMemo(() => `filter-${random(1, 100)}`, []);
+  const filterId = useId();
 
   const config = useLiquidGlassConfig();
-  console.info(`HAI ::: -> LiquidGlass -> config:`, config);
 
   useEffect(() => {
     gsap.registerPlugin(Draggable);
