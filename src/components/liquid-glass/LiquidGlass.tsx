@@ -43,11 +43,14 @@ const LiquidGlass: React.FC<Props> = (props) => {
     <div
       className={`liquid-glass ${className ? className : ""}`}
       ref={ref}
-      style={{
-        backdropFilter: `url(#${filterId}) saturate(var(--saturation, 1))`,
-        ...style,
-      }}
+      style={
+        {
+          "--filter-url": `url(#${filterId}) saturate(var(--saturation, 1))`,
+          ...style,
+        } as any
+      }
     >
+      <div className="background"></div>
       {children}
       <LiquidGlassFilter
         filterId={filterId}

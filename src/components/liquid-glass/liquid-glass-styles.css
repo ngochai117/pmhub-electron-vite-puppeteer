@@ -1,23 +1,47 @@
 .liquid-glass {
+  position: relative;
   transition: opacity 0.26s ease-out;
   border-radius: 28px;
-  background: light-dark(hsl(0 0% 100% / var(--frost, 0)),
-      hsl(0 0% 0% / var(--frost, 0)));
-  box-shadow: 0 0 2px 1px light-dark(color-mix(in oklch, canvasText, #0000 85%),
-      color-mix(in oklch, canvasText, #0000 65%)) inset,
-    0 0 10px 4px light-dark(color-mix(in oklch, canvasText, #0000 90%),
-      color-mix(in oklch, canvasText, #0000 85%)) inset,
-    0px 4px 16px rgba(17, 17, 26, 0.05), 0px 8px 24px rgba(17, 17, 26, 0.05),
-    0px 16px 56px rgba(17, 17, 26, 0.05),
-    0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-    0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-    0px 16px 56px rgba(17, 17, 26, 0.05) inset;
 
   &.demo {
     height: calc(var(--height) * 1px);
     width: calc(var(--width) * 1px);
-    position: fixed;
     border-radius: calc(var(--radius) * 1px);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: inherit;
+
+    background: light-dark(hsl(0 0% 100% / var(--frost, 0)),
+        hsl(0 0% 0% / var(--frost, 0)));
+    box-shadow: 0 0 2px 1px light-dark(color-mix(in oklch, canvasText, #0000 85%),
+        color-mix(in oklch, canvasText, #0000 65%)) inset,
+      0 0 10px 4px light-dark(color-mix(in oklch, canvasText, #0000 90%),
+        color-mix(in oklch, canvasText, #0000 85%)) inset,
+      0px 4px 16px rgba(17, 17, 26, 0.05), 0px 8px 24px rgba(17, 17, 26, 0.05),
+      0px 16px 56px rgba(17, 17, 26, 0.05),
+      0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+      0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+      0px 16px 56px rgba(17, 17, 26, 0.05) inset;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(0px);
+    -webkit-filter: var(--filter-url, none);
+    filter: var(--filter-url, none);
+    overflow: hidden;
+    isolation: isolate;
   }
 
   .filter {
@@ -73,19 +97,15 @@
       height: 100%;
       width: 100%;
       pointer-events: none;
-      /* border-radius: calc(var(--radius) * 1px); */
+      border-radius: calc(var(--radius) * 1px);
     }
   }
 }
 
 [data-debug='true'] .liquid-glass .displacement-debug {
-    translate: 0 calc(100% + 1rem);
-    scale: 1;
-    opacity: 1;
-  }
-
-[data-top='true'] div.tp-dfwv {
-  top: 8px;
+  translate: 0 calc(100% + 1rem);
+  scale: 1;
+  opacity: 1;
 }
 
 div.tp-dfwv {
@@ -94,4 +114,8 @@ div.tp-dfwv {
   bottom: 8px;
   top: unset;
   view-transition-name: pane;
+}
+
+[data-top='true'] div.tp-dfwv {
+  top: 8px;
 }
