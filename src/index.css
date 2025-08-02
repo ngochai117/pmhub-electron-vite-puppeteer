@@ -1,103 +1,75 @@
 :root {
+  /* ==== Font & text rendering ==== */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* spacing */
-  --gap: 16px;
-  --glass-border-radius: 28px;
 
-  /* theme */
-  --text-color: rgba(255, 255, 255, 0.87);
+  scrollbar-color: canvasText #0000;
+
+  /* ==== Size & layout ==== */
+  min-width: 100vw;
+  min-height: 100vh;
+  font-size: medium;
+
+  /* ==== Spacing & UI constants ==== */
+  --gap: 16px;
+
+  /* ==== Theming ==== */
+  color-scheme: light dark;
+  --text-color: light-dark(#1a1a1a, #f5f5f5);
+  --button-text-color: light-dark(#ffffff, #000000);
+  --input-border-color: light-dark(#d0d0d0, #444);
+  --placeholder-color: light-dark(#999999, #888888);
+  --outline-color: light-dark(#646cff, #8ab4f8);
 }
+
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-   min-width: 100vw;
-  min-height: 100vh;
-  background: url(https://i.pinimg.com/736x/4b/42/29/4b4229c181c415f6a33aed33e666176d.jpg) center/cover;
-background-size: 600px;
- -webkit-animation: moveBackground 60s linear infinite;
-         animation: moveBackground 60s linear infinite;
   display: flex;
   flex-direction: column;
-         align-items: center;
-         justify-content: center;
- margin:0;
- padding: 0;
- gap: var(--gap);
- color: var(---text-color);
+  margin: 0;
+  padding: 20px 10%;
+  min-width: 100vw;
+  min-height: 100vh;
+  gap: var(--gap);
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: medium;
+
+  color: var(--text-color);
+  /* background: light-dark(#ffffff, #000000); */
+
+  background: url(https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg) center/cover;
+  background-size: 600px;
+ -webkit-animation: moveBackground 60s linear infinite;
+         animation: moveBackground 60s linear infinite;
+
 }
 
-@-webkit-keyframes moveBackground {
-  from {
-    background-position: 0% 0%;
-  }
-  to {
-    background-position: 0% -1000%;
-  }
+[data-theme='light'] :where(html, body) {
+  color-scheme: light only;
+}
+
+[data-theme='dark'] :where(html, body) {
+  color-scheme: dark only;
 }
 
 @keyframes moveBackground {
   from {
     background-position: 0% 0%;
   }
+
   to {
     background-position: 0% -1000%;
   }
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
 }

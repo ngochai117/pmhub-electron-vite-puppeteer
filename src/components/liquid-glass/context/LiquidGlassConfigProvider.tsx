@@ -10,7 +10,9 @@ import {
   useEffect,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { BindingParams, Pane } from "tweakpane";
+import LiquidGlass from "../LiquidGlass";
 
 interface BasePreset {
   scale: number;
@@ -36,6 +38,7 @@ export interface LiquidGlassConfig extends BasePreset {
   theme: "system" | "light" | "dark";
   debug: boolean;
   top: boolean;
+  demo: boolean;
 }
 
 const base: BasePreset = {
@@ -102,6 +105,7 @@ const configDefault: LiquidGlassConfig = {
   theme: "system",
   debug: false,
   top: false,
+  demo: false,
 };
 
 type FlatConfig = Record<string, any>;
@@ -139,6 +143,8 @@ const useConfig = () => {
       "--frost": config.frost,
       "--output-blur": config.displace,
       "--saturation": config.saturation,
+      "--width": config.width,
+      "--height": config.height,
     });
     gsap.set("feDisplacementMap", {
       attr: {
@@ -174,7 +180,7 @@ const useConfig = () => {
   }, [config]);
 
   useEffect(() => {
-    const ctrl = new Pane({ title: "config", expanded: true });
+    const ctrl = new Pane({ title: "config", expanded: false });
 
     const sync = () => {
       const state = ctrl.exportState();
@@ -186,6 +192,7 @@ const useConfig = () => {
 
     // 🔽 Dùng mảng và loop
     const basicBindings: Binding[] = [
+      { key: "demo" },
       { key: "debug" },
       { key: "top" },
       {
@@ -203,8 +210,8 @@ const useConfig = () => {
     const settingBindings: Binding[] = [
       { key: "frost", min: 0, max: 1, step: 0.01 },
       { key: "saturation", min: 0, max: 2, step: 0.1 },
-      { key: "width", min: 80, max: 500, step: 1, label: "width (px)" },
-      { key: "height", min: 35, max: 500, step: 1, label: "height (px)" },
+      { key: "width", min: 80, max: 1000, step: 1, label: "width (px)" },
+      { key: "height", min: 35, max: 1000, step: 1, label: "height (px)" },
       { key: "radius", min: 0, max: 500, step: 1, label: "radius (px)" },
       { key: "border", min: 0, max: 1, step: 0.01 },
       { key: "alpha", min: 0, max: 1, step: 0.01 },
@@ -283,6 +290,11 @@ const LiquidGlassConfigProvider: FC<Props> = memo((props) => {
   return (
     <LiquidGlassConfigContext.Provider value={config}>
       {children}
+      {config.demo && (
+        <LiquidGlass className="demo" draggable>
+          <div style={{ padding: 20 }}></div>
+        </LiquidGlass>
+      )}
     </LiquidGlassConfigContext.Provider>
   );
 });

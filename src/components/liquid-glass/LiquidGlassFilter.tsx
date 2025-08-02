@@ -1,22 +1,24 @@
 import React, { memo, useEffect, useRef } from "react";
-import "./styles.css";
 import gsap from "gsap";
+import { LiquidGlassConfig } from "./context/LiquidGlassConfigProvider";
 
 interface Props {
   width: number;
   height: number;
-  config: any;
+  config: LiquidGlassConfig;
   filterId: string;
+  borderRadius: number;
 }
 
 const LiquidGlassFilter: React.FC<Props> = (props) => {
-  const { width, height, config, filterId } = props;
+  const { width, height, config, filterId, borderRadius } = props;
   const refFeImage = useRef<SVGFEImageElement>(null);
   const refDisplacement = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!refDisplacement.current) return;
-
+    const { alpha, lightness, blend, blur } = config || {};
+    const radius = Math.max(borderRadius - 5, 0);
     const border = Math.min(width, height) * (config.border * 0.5);
     const kids = `
     <svg class="displacement-image" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
@@ -33,21 +35,15 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
       <!-- backdrop -->
       <rect x="0" y="0" width="${width}" height="${height}" fill="black"></rect>
       <!-- red linear -->
-      <rect x="0" y="0" width="${width}" height="${height}" rx="${
-      config.radius
-    }" fill="url(#red)" />
+      <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#red)" />
       <!-- blue linear -->
-      <rect x="0" y="0" width="${width}" height="${height}" rx="${
-      config.radius
-    }" fill="url(#blue)" style="mix-blend-mode: ${config.blend}" />
+      <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#blue)" style="mix-blend-mode: ${blend}" />
       <!-- block out distortion -->
       <rect x="${border}" y="${
       Math.min(width, height) * (config.border * 0.5)
-    }" width="${width - border * 2}" height="${height - border * 2}" rx="${
-      config.radius
-    }" fill="hsl(0 0% ${config.lightness}% / ${
-      config.alpha
-    }" style="filter:blur(${config.blur}px)" />
+    }" width="${width - border * 2}" height="${
+      height - border * 2
+    }" rx="${radius}" fill="hsl(0 0% ${lightness}% / ${alpha}" style="filter:blur(${blur}px)" />
     </svg>
     <div class="label">
       <span>displacement image</span>
@@ -69,7 +65,7 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
         href: dataUri,
       },
     });
-  }, [config, height, width]);
+  }, [borderRadius, config, height, width]);
 
   return (
     <>
@@ -90,6 +86,7 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
               width="100%"
               height="100%"
               result="map"
+              preserveAspectRatio="none"
             ></feImage>
 
             <feDisplacementMap

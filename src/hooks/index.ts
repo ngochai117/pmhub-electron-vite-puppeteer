@@ -1,7 +1,6 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect, RefObject, useMemo } from "react";
 
-export function useSize<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
+export function useSize(ref: RefObject<HTMLElement>) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -20,7 +19,24 @@ export function useSize<T extends HTMLElement>() {
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [ref]);
 
-  return { ref, size };
+  return size;
+}
+
+export function useEffectiveBorderRadius(
+  ref: React.RefObject<HTMLElement>
+): number {
+  const el = ref.current;
+
+  const radius = useMemo(() => {
+    if (!el) return 0;
+    const style = getComputedStyle(el);
+    const raw = el.classList.contains("demo")
+      ? style.getPropertyValue("--radius")?.trim()
+      : style.borderRadius?.trim();
+    return raw ? parseFloat(raw) : 0;
+  }, [el]);
+
+  return radius;
 }

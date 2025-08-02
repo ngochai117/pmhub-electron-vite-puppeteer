@@ -1,48 +1,62 @@
-import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
-import React, { memo, PropsWithChildren, useEffect, useId } from "react";
+import React, {
+  CSSProperties,
+  memo,
+  PropsWithChildren,
+  useEffect,
+  useId,
+  useRef,
+} from "react";
 import LiquidGlassFilter from "./LiquidGlassFilter";
-import "./styles.css";
-import { useSize } from "../../hooks";
+import "./liquid-glass-styles.css";
+import { useEffectiveBorderRadius, useSize } from "../../hooks";
 import { useLiquidGlassConfig } from "./context/LiquidGlassConfigProvider";
 
-interface Props extends PropsWithChildren {}
+interface Props extends PropsWithChildren {
+  className?: string;
+  style?: CSSProperties;
+  draggable?: boolean;
+}
 
 const LiquidGlass: React.FC<Props> = (props) => {
-  const { children } = props || {};
-  const { ref, size } = useSize<HTMLDivElement>();
+  const { children, className, style, draggable } = props || {};
+  const ref = useRef<HTMLDivElement>(null);
+
+  const size = useSize(ref);
+  const borderRadius = useEffectiveBorderRadius(ref);
   const filterId = useId();
 
   const config = useLiquidGlassConfig();
 
   useEffect(() => {
-    gsap.registerPlugin(Draggable);
-    Draggable.create(".effect", { type: "x,y" });
-  }, []);
+    if (draggable) {
+      Draggable.create(ref.current, { type: "x,y" });
+    } else {
+      Draggable.get(ref.current)?.kill?.();
+    }
+  }, [draggable, ref]);
 
   const width = size.width;
   const height = size.height;
 
   return (
-    <>
-      <div
-        className="effect"
-        ref={ref}
-        style={{
-          backdropFilter: `url(#${filterId}) saturate(var(--saturation, 1))`,
-        }}
-      >
-        {children}
-        <LiquidGlassFilter
-          filterId={filterId}
-          config={config}
-          height={height}
-          width={width}
-        />
-      </div>
-
-      <div className="dock-placeholder"></div>
-    </>
+    <div
+      className={`liquid-glass ${className ? className : ""}`}
+      ref={ref}
+      style={{
+        backdropFilter: `url(#${filterId}) saturate(var(--saturation, 1))`,
+        ...style,
+      }}
+    >
+      {children}
+      <LiquidGlassFilter
+        filterId={filterId}
+        config={config}
+        height={height}
+        width={width}
+        borderRadius={borderRadius}
+      />
+    </div>
   );
 };
 
