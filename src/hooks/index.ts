@@ -29,14 +29,15 @@ export function useEffectiveBorderRadius(
 ): number {
   const el = ref.current;
 
-  const radius = useMemo(() => {
+  const radius = (() => {
     if (!el) return 0;
     const style = getComputedStyle(el);
     const raw = el.classList.contains("demo")
       ? style.getPropertyValue("--radius")?.trim()
       : style.borderRadius?.trim();
     return raw ? parseFloat(raw) : 0;
-  }, [el]);
+  })();
+  console.info(`HAI ::: -> useEffectiveBorderRadius -> radius:`, radius);
 
   return radius;
 }

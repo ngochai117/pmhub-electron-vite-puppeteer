@@ -1,6 +1,6 @@
 .liquid-glass {
   transition: opacity 0.26s ease-out;
-  border-radius: calc(var(--radius) * 1px);
+  border-radius: 28px;
   background: light-dark(hsl(0 0% 100% / var(--frost, 0)),
       hsl(0 0% 0% / var(--frost, 0)));
   box-shadow: 0 0 2px 1px light-dark(color-mix(in oklch, canvasText, #0000 85%),
@@ -75,18 +75,6 @@
       pointer-events: none;
       /* border-radius: calc(var(--radius) * 1px); */
     }
-  }
-  &.border-2 {
-    border-radius: 20px;
-    
-  }
-}
-
-
-/* custom button, input */
-.liquid-glass {
-  input {
-    
   }
 }
 

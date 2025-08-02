@@ -290,11 +290,7 @@ const LiquidGlassConfigProvider: FC<Props> = memo((props) => {
   return (
     <LiquidGlassConfigContext.Provider value={config}>
       {children}
-      {config.demo && (
-        <LiquidGlass className="demo" draggable>
-          <div style={{ padding: 20 }}></div>
-        </LiquidGlass>
-      )}
+      {config.demo && <LiquidGlass className="demo" draggable></LiquidGlass>}
     </LiquidGlassConfigContext.Provider>
   );
 });

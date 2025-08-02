@@ -13,10 +13,19 @@ const AppFC: React.FC = () => {
   return (
     <>
       <h1 className="heading">PM Auto Login</h1>
-      <input id="username" placeholder="Username" />
-      <LiquidGlass className="flex-column border-2">
-        <div style={{ width: "100%", minHeight: 50, padding: 20 }}>
-          <input id="username" placeholder="Username" />
+      <input
+        id="username"
+        placeholder="Username"
+        className="backdrop-blur-md bg-white/10 border border-white/20 text-white px-4 py-2 rounded-md"
+      />
+      <LiquidGlass>
+        <div style={{ width: "100%", padding: 20, minHeight: 200 }}>
+          <input
+            id="username"
+            placeholder="Username"
+            style={{ width: "100%", minHeight: 100 }}
+            className="backdrop-blur-md bg-white/10 border border-white/20 text-white px-4 py-2 rounded-md"
+          />
         </div>
       </LiquidGlass>
       {/* <LiquidGlass style={{}} className="flex-column">

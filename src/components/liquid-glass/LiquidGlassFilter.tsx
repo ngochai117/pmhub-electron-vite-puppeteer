@@ -18,7 +18,7 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
   useEffect(() => {
     if (!refDisplacement.current) return;
     const { alpha, lightness, blend, blur } = config || {};
-    const radius = Math.max(borderRadius - 5, 0);
+    const radius = Math.max(borderRadius - 10, 0);
     const border = Math.min(width, height) * (config.border * 0.5);
     const kids = `
     <svg class="displacement-image" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
