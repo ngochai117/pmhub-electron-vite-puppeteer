@@ -142,7 +142,7 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
             />
             <feBlend in="red" in2="green" mode="screen" result="rg" />
             <feBlend in="rg" in2="blue" mode="screen" result="output" />
-            <feGaussianBlur in="output" stdDeviation="0.7" />
+            <feGaussianBlur in="output" stdDeviation={config.displace} />
           </filter>
         </defs>
       </svg>

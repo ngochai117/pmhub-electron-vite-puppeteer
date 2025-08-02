@@ -1,4 +1,4 @@
-import { useState, useEffect, RefObject, useMemo } from "react";
+import { useState, useEffect, RefObject } from "react";
 
 export function useSize(ref: RefObject<HTMLElement>) {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -37,7 +37,6 @@ export function useEffectiveBorderRadius(
       : style.borderRadius?.trim();
     return raw ? parseFloat(raw) : 0;
   })();
-  console.info(`HAI ::: -> useEffectiveBorderRadius -> radius:`, radius);
 
   return radius;
 }

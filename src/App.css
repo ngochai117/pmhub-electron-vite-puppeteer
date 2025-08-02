@@ -4,7 +4,8 @@
   text-align: center;
   padding: 16px;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
+  text-shadow: 0 2px 4px
+    light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
 }
 
 .loading-spinner {
@@ -30,15 +31,18 @@
   }
 }
 
-
 /* custom button, input */
 input {
   width: 100%;
   padding: 0.5rem 1rem;
   border: 1px solid var(--input-border-color);
-  border-radius: 6px;
-  background: transparent;
+  border-radius: 16px;
   font-size: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 input::placeholder {
@@ -54,10 +58,10 @@ input:focus {
 button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
+  font-weight: 600;
   border: none;
   border-radius: 6px;
   background: #646cff;
-  color: var(--button-text-color);
   cursor: pointer;
   transition: background 0.3s ease;
 }
@@ -69,4 +73,14 @@ button:hover {
 button:focus {
   outline: 2px solid var(--outline-color);
   outline-offset: 2px;
+}
+
+/* Custom inside Liquid Glass */
+.liquid-glass.clickable {
+  width: fit-content;
+
+  button {
+    background: transparent;
+    border-radius: inherit;
+  }
 }

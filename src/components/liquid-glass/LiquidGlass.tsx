@@ -5,28 +5,46 @@ import React, {
   PropsWithChildren,
   useEffect,
   useId,
+  useMemo,
   useRef,
 } from "react";
 import LiquidGlassFilter from "./LiquidGlassFilter";
 import "./liquid-glass-styles.css";
 import { useEffectiveBorderRadius, useSize } from "../../hooks";
-import { useLiquidGlassConfig } from "./context/LiquidGlassConfigProvider";
+import {
+  LiquidGlassConfig,
+  useLiquidGlassConfig,
+} from "./context/LiquidGlassConfigProvider";
 
 interface Props extends PropsWithChildren {
   className?: string;
   style?: CSSProperties;
   draggable?: boolean;
+  config?: Partial<LiquidGlassConfig>;
 }
 
 const LiquidGlass: React.FC<Props> = (props) => {
-  const { children, className, style, draggable } = props || {};
+  const {
+    children,
+    className,
+    style,
+    draggable,
+    config: configProp,
+  } = props || {};
   const ref = useRef<HTMLDivElement>(null);
 
   const size = useSize(ref);
   const borderRadius = useEffectiveBorderRadius(ref);
   const filterId = useId();
 
-  const config = useLiquidGlassConfig();
+  const configCommon = useLiquidGlassConfig();
+  const config = useMemo(
+    () => ({
+      ...configCommon,
+      ...configProp,
+    }),
+    [configCommon, configProp]
+  );
 
   useEffect(() => {
     if (draggable) {
@@ -50,7 +68,6 @@ const LiquidGlass: React.FC<Props> = (props) => {
         } as any
       }
     >
-      <div className="background"></div>
       {children}
       <LiquidGlassFilter
         filterId={filterId}

@@ -10,7 +10,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
 import { BindingParams, Pane } from "tweakpane";
 import LiquidGlass from "../LiquidGlass";
 
@@ -51,7 +50,7 @@ const base: BasePreset = {
   x: "R",
   y: "B",
   alpha: 0.93,
-  blur: 7,
+  blur: 5,
   r: 0,
   g: 10,
   b: 20,
@@ -61,44 +60,6 @@ const base: BasePreset = {
   height: 96,
   frost: 0.05,
 };
-
-// const presets: Record<string, BasePreset> = {
-//   dock: {
-//     ...base,
-//     width: 336,
-//     height: 96,
-//     displace: 0.2,
-//     frost: 0.05,
-//   },
-//   pill: {
-//     ...base,
-//     width: 200,
-//     height: 80,
-//     displace: 0,
-//     frost: 0,
-//     radius: 40,
-//   },
-//   bubble: {
-//     ...base,
-//     radius: 70,
-//     width: 140,
-//     height: 140,
-//     displace: 0,
-//     frost: 0,
-//   },
-//   free: {
-//     ...base,
-//     width: 140,
-//     height: 280,
-//     radius: 80,
-//     border: 0.15,
-//     alpha: 0.74,
-//     lightness: 60,
-//     blur: 10,
-//     displace: 0,
-//     scale: -300,
-//   },
-// };
 
 const configDefault: LiquidGlassConfig = {
   ...base,
@@ -141,7 +102,7 @@ const useConfig = () => {
     gsap.set(document.documentElement, {
       "--radius": config.radius,
       "--frost": config.frost,
-      "--output-blur": config.displace,
+      // "--output-blur": config.displace,
       "--saturation": config.saturation,
       "--width": config.width,
       "--height": config.height,
@@ -168,11 +129,11 @@ const useConfig = () => {
         scale: config.scale + config.b,
       },
     });
-    gsap.set("feGaussianBlur", {
-      attr: {
-        stdDeviation: config.displace,
-      },
-    });
+    // gsap.set("feGaussianBlur", {
+    //   attr: {
+    //     stdDeviation: config.displace,
+    //   },
+    // });
 
     document.documentElement.dataset.top = String(config.top);
     document.documentElement.dataset.debug = String(config.debug);

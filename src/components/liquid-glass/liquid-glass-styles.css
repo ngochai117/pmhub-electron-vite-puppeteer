@@ -10,7 +10,7 @@
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -19,7 +19,8 @@
 
     background: light-dark(hsl(0 0% 100% / var(--frost, 0)),
         hsl(0 0% 0% / var(--frost, 0)));
-    box-shadow: 0 0 2px 1px light-dark(color-mix(in oklch, canvasText, #0000 85%),
+
+    /* box-shadow: 0 0 2px 1px light-dark(color-mix(in oklch, canvasText, #0000 85%),
         color-mix(in oklch, canvasText, #0000 65%)) inset,
       0 0 10px 4px light-dark(color-mix(in oklch, canvasText, #0000 90%),
         color-mix(in oklch, canvasText, #0000 85%)) inset,
@@ -27,11 +28,36 @@
       0px 16px 56px rgba(17, 17, 26, 0.05),
       0px 4px 16px rgba(17, 17, 26, 0.05) inset,
       0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-      0px 16px 56px rgba(17, 17, 26, 0.05) inset;
+      0px 16px 56px rgba(17, 17, 26, 0.05) inset; */
+      
+    --glass-reflex-light: 1;
+    --glass-reflex-dark: 1;
+    --c-light: #fff;
+    --c-dark: #000;
+
+    --glass-reflex-color-light: color-mix(in srgb,
+        var(--c-light) calc(var(--glass-reflex-light) * 100%),
+        transparent);
+    --glass-reflex-color-dark: color-mix(in srgb,
+        var(--c-dark) calc(var(--glass-reflex-dark) * 100%),
+        transparent);
+
+    --glass-reflex-color: light-dark(var(--glass-reflex-color-light),
+        var(--glass-reflex-color-dark));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glass-reflex-color) 10%, transparent),
+      inset 1.8px 3px 0px -2px color-mix(in srgb, var(--glass-reflex-color) 90%, transparent),
+      inset -2px -2px 0px -2px color-mix(in srgb, var(--glass-reflex-color) 80%, transparent),
+      inset -3px -8px 1px -6px color-mix(in srgb, var(--glass-reflex-color) 60%, transparent),
+      inset -0.3px -1px 4px 0px color-mix(in srgb, var(--glass-reflex-color) 12%, transparent),
+      inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--glass-reflex-color) 20%, transparent),
+      inset 0px 3px 4px -2px color-mix(in srgb, var(--glass-reflex-color) 20%, transparent),
+      inset 2px -6.5px 1px -4px color-mix(in srgb, var(--glass-reflex-color) 10%, transparent),
+      0px 1px 5px 0px color-mix(in srgb, var(--glass-reflex-color) 10%, transparent),
+      0px 6px 16px 0px color-mix(in srgb, var(--glass-reflex-color) 8%, transparent);
   }
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     z-index: -1;
     inset: 0;
@@ -74,7 +100,7 @@
       span {
         display: inline-block;
         font-size: 0.875rem;
-        font-family: 'Gloria Hallelujah', cursive;
+        font-family: "Gloria Hallelujah", cursive;
         padding: 0.5rem 0.75rem;
         background: color-mix(in oklch, canvas, #0000 25%);
         backdrop-filter: blur(4px);
@@ -90,6 +116,7 @@
         translate: 25% 60%;
         scale: -1 1;
         width: 40px;
+        top: 0;
       }
     }
 
@@ -102,7 +129,7 @@
   }
 }
 
-[data-debug='true'] .liquid-glass .displacement-debug {
+[data-debug="true"] .liquid-glass .displacement-debug {
   translate: 0 calc(100% + 1rem);
   scale: 1;
   opacity: 1;
@@ -116,6 +143,6 @@ div.tp-dfwv {
   view-transition-name: pane;
 }
 
-[data-top='true'] div.tp-dfwv {
+[data-top="true"] div.tp-dfwv {
   top: 8px;
 }
