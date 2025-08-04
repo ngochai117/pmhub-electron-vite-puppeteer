@@ -79,7 +79,11 @@ button {
     opacity: 0.75;
     cursor: not-allowed;
   }
-  &:hover {
+  .spin-hover {
+    transform-origin: center;
+    transition: transform 0.3s ease;
+  }
+  &:hover:not(:disabled) {
     background: var(--input-hover-bg);
     color: var(--text-color-hover);
     border-color: color-mix(
@@ -87,6 +91,12 @@ button {
       var(--input-border-color) 60%,
       var(--input-text)
     );
+    .wiggle-hover {
+      animation: wiggle 0.6s ease-in-out infinite;
+    }
+    .spin-hover {
+      transform: rotate(90deg);
+    }
   }
 }
 
@@ -134,6 +144,9 @@ button {
     border: 1px solid transparent;
     border-radius: inherit;
   }
+  &:not(.disabled):hover {
+    scale: 1.05;
+  }
 }
 
 .loading-spinner {
@@ -151,14 +164,6 @@ button {
   to {
     transform: rotate(360deg);
   }
-}
-
-.spin-hover :is(i, span) {
-  transition: transform 0.3s ease;
-  transform-origin: center;
-}
-.spin-hover:hover:not(:disabled) :is(i, span) {
-  transform: rotate(90deg);
 }
 
 @keyframes wiggle {
@@ -180,10 +185,6 @@ button {
   100% {
     transform: rotate(0deg);
   }
-}
-
-.wiggle-hover:hover:not(:disabled) :is(i, span) {
-  animation: wiggle 0.6s ease-in-out infinite;
 }
 
 .wiggle-infinite {

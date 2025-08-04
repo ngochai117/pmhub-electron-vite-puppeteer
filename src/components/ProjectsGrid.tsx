@@ -49,12 +49,12 @@ const ProjectsGrid: React.FC<Props> = (props) => {
               />
 
               <button
-                className="absolute translate-x-[30%] -translate-y-[30%] top-0 right-0 rounded-full w-10 h-10 flex items-center justify-center spin-hover"
+                className="absolute translate-x-[30%] -translate-y-[30%] top-0 right-0 rounded-full w-10 h-10 flex items-center justify-center"
                 style={{ padding: 0 }}
                 onClick={() => removeProjectRow(index)}
                 disabled={projects?.length === 1}
               >
-                <span>✖</span>
+                <span className="spin-hover">✖</span>
               </button>
             </LiquidGlass>
           </motion.li>
@@ -70,10 +70,10 @@ const ProjectsGrid: React.FC<Props> = (props) => {
         <LiquidGlass className="clickable">
           <button
             type="button"
-            className="flex spin-hover wrap-icon"
+            className="flex wrap-icon"
             onClick={addProjectRow}
           >
-            <i className="fa-solid fa-plus icon-left"></i>
+            <i className="fa-solid fa-plus icon-left spin-hover"></i>
             Thêm project
           </button>
         </LiquidGlass>

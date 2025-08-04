@@ -4,7 +4,7 @@ import gsap from "gsap";
 import "./App.css";
 import { withLiquidGlassConfig } from "./components/liquid-glass/context/LiquidGlassConfigProvider";
 import LiquidGlass from "./components/liquid-glass/LiquidGlass";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Draggable } from "gsap/Draggable";
 import LicenseStatus from "./components/LicenseStatus";
 import ProjectsGrid from "./components/ProjectsGrid";
@@ -52,6 +52,10 @@ const AppFC: React.FC = () => {
 
   return (
     <div className="flex flex-col py-[5%] px-[10%] gap-(--gap)">
+      <div
+        id="ripple-layer"
+        className="fixed inset-0 pointer-events-none z-0"
+      ></div>
       {/* <h1 className="heading">PM Auto Login</h1> */}
 
       <LicenseStatus license={license} />
@@ -91,24 +95,16 @@ const AppFC: React.FC = () => {
       />
 
       <div className="flex gap-4">
-        <LiquidGlass className="clickable">
-          <button
-            id="saveBtn"
-            onClick={save}
-            className="wrap-icon wiggle-hover"
-            disabled
-          >
-            <i className="fa-solid fa-floppy-disk icon-left"></i> Lưu
+        <LiquidGlass className="clickable disabled">
+          <button id="saveBtn" onClick={save} className="wrap-icon" disabled>
+            <i className="fa-solid fa-floppy-disk icon-left wiggle-hover"></i>{" "}
+            Lưu
           </button>
         </LiquidGlass>
         <LiquidGlass className="clickable">
-          <button
-            id="runBtn"
-            onClick={runNow}
-            className="wrap-icon wiggle-hover"
-          >
-            <i className="fa-solid fa-rocket icon-left icon-wiggle"></i> Lưu &
-            Chạy ngay
+          <button id="runBtn" onClick={runNow} className="wrap-icon">
+            <i className="fa-solid fa-rocket icon-left icon-wiggle wiggle-hover"></i>{" "}
+            Lưu & Chạy ngay
           </button>
         </LiquidGlass>
       </div>

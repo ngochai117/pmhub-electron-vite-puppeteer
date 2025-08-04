@@ -119,10 +119,10 @@ export function ModalRoot() {
         <div className="modal-actions" id="modalButtons" ref={btnRef}></div>
         <button
           id="buttonClose"
-          className="close-btn spin-hover rounded-full"
+          className="close-btn rounded-full"
           onClick={hideModal}
         >
-          <span>✖</span>
+          <span className="spin-hover">✖</span>
         </button>
       </LiquidGlass>
     </div>,

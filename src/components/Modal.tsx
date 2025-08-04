@@ -71,11 +71,11 @@ const Modal: React.FC<Props> = (props) => {
             {children}
             {!!closeButton && (
               <button
-                className="absolute top-3 right-3 rounded-full w-8 h-8 flex items-center justify-center spin-hover"
+                className="absolute top-3 right-3 rounded-full w-8 h-8 flex items-center justify-center"
                 style={{ padding: 0 }}
                 onClick={requestClose}
               >
-                <span>✖</span>
+                <span className="spin-hover">✖</span>
               </button>
             )}
           </motion.div>

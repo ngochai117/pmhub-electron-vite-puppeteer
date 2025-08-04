@@ -20,6 +20,18 @@ const ActivateButton: React.FC<Props> = (props) => {
     setOpenActivateModal(true);
   };
 
+  const classNameButtonMenu =
+    "py-2 px-4 rounded-lg cursor-pointer hover:bg-black/10 transition duration-200 ease-in-out hover:scale-105 active:scale-100 ho";
+
+  const renderPing = (className = "") => (
+    <span className={`absolute ${className} pointer-events-none`}>
+      <span className="relative flex size-3">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-500 opacity-75"></span>
+        <span className="relative inline-flex size-3 rounded-full bg-sky-600"></span>
+      </span>
+    </span>
+  );
+
   return (
     <>
       <div className="relative inline-block">
@@ -39,6 +51,7 @@ const ActivateButton: React.FC<Props> = (props) => {
             >
               <i className="fa-solid fa-key"></i>
             </button>
+            {openMenu ? null : renderPing("top-0 right-0")}
           </LiquidGlass>
         )}
 
@@ -49,23 +62,15 @@ const ActivateButton: React.FC<Props> = (props) => {
           zIndex={10}
           outsideClose
         >
-          <div
-            onClick={handleMenuClick}
-            className="py-2 px-4 rounded-lg cursor-pointer hover:bg-black/10 transition"
-          >
+          <div onClick={handleMenuClick} className={`${classNameButtonMenu}`}>
             Trial
           </div>
           <div
             onClick={handleMenuClick}
-            className="py-2 px-4 rounded-lg cursor-pointer hover:bg-black/10 transition font-semibold"
+            className={`${classNameButtonMenu} font-semibold`}
           >
             Active Key
-            <span className="absolute">
-              <span className="relative flex size-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-500 opacity-75"></span>
-                <span className="relative inline-flex size-3 rounded-full bg-sky-600"></span>
-              </span>
-            </span>
+            {renderPing()}
           </div>
         </Modal>
       </div>
