@@ -1,10 +1,10 @@
 import { useState, useEffect, RefObject } from "react";
 
-export function useSize(ref: RefObject<HTMLElement>) {
+export function useSize(ref: RefObject<HTMLElement | null>) {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    const el = ref.current;
+    const el = ref?.current;
     if (!el) return;
 
     const observer = new ResizeObserver((entries) => {
@@ -25,9 +25,9 @@ export function useSize(ref: RefObject<HTMLElement>) {
 }
 
 export function useEffectiveBorderRadius(
-  ref: React.RefObject<HTMLElement>
+  ref: React.RefObject<HTMLElement | null>
 ): number {
-  const el = ref.current;
+  const el = ref?.current;
 
   const radius = (() => {
     if (!el) return 0;

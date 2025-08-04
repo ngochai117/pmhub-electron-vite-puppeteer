@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 :root {
   /* ==== Font & text rendering ==== */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -8,7 +7,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 
   scrollbar-color: canvasText #0000;
 
@@ -18,16 +16,26 @@
   font-size: medium;
 
   /* ==== Spacing & UI constants ==== */
+  --gap: 1rem;
+  --gap-inside: 0.75rem;
 
   /* ==== Theming ==== */
   color-scheme: light dark;
-  --text-color: light-dark(#f5f5f5, #1a1a1a);
-  --button-text-color: light-dark(#ffffff, #000000);
-  --input-border-color: light-dark(#d0d0d0, #444);
-  --placeholder-color: light-dark(#999999, #888888);
-  --outline-color: light-dark(#646cff, #8ab4f8);
-}
+  --text-color: light-dark(rgba(26, 26, 26, 0.8), rgba(245, 245, 245, 0.85));
+  --text-color-hover: light-dark(rgba(26, 26, 26, 1), rgba(245, 245, 245, 1));
 
+  --input-bg: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.06));
+  --input-text: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.8));
+  --input-placeholder: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
+  --input-border-color: light-dark(
+    rgba(200, 200, 200, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+  --input-hover-bg: light-dark(
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.12)
+  );
+}
 
 body {
   display: flex;
@@ -42,19 +50,24 @@ body {
   color: var(--text-color);
   /* background: light-dark(#ffffff, #000000); */
 
-  background: url(https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg) center/cover;
+  /* background: url(https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg) center/cover; */
+  background: url(https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png)
+    center/cover;
   background-size: 600px;
- -webkit-animation: moveBackground 60s linear infinite;
-         animation: moveBackground 60s linear infinite;
-
+  /* -webkit-animation: moveBackground 60s linear infinite;
+  animation: moveBackground 60s linear infinite; */
 }
 
-[data-theme='light'] :where(html, body) {
+[data-theme="light"] :where(html, body) {
   color-scheme: light only;
+  background: url(https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png)
+    center/cover;
 }
 
-[data-theme='dark'] :where(html, body) {
+[data-theme="dark"] :where(html, body) {
   color-scheme: dark only;
+  background: url(https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800)
+    center/cover;
 }
 
 @keyframes moveBackground {
@@ -66,7 +79,6 @@ body {
     background-position: 0% -1000%;
   }
 }
-
 
 *,
 *:after,

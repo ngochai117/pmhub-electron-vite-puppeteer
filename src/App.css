@@ -2,10 +2,9 @@
   font-size: xx-large;
   font-weight: 900;
   text-align: center;
-  padding: 16px;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px
-    light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
+  padding: 1rem;
+  letter-spacing: 0.125rem;
+  text-shadow: 0 2px 4px color-mix(in srgb, var(--input-text) 30%, transparent);
 }
 
 .loading-spinner {
@@ -35,52 +34,154 @@
 input {
   width: 100%;
   padding: 0.5rem 1rem;
+  border-radius: 24px;
+  color: var(--input-text);
+  background: var(--input-bg);
   border: 1px solid var(--input-border-color);
-  border-radius: 16px;
   font-size: 1rem;
-  background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(8px) saturate(180%);
   -webkit-backdrop-filter: blur(8px) saturate(180%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-input::placeholder {
-  color: var(--placeholder-color);
-  opacity: 1;
-}
-
-input:focus {
-  outline: 2px solid var(--outline-color);
-  outline-offset: 2px;
+  transition: all 0.3s ease;
+  outline: none;
+  &::placeholder {
+    color: var(--input-placeholder);
+  }
+  &:focus {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--input-text) 30%, transparent);
+  }
+  &:hover {
+    background: var(--input-hover-bg);
+    border-color: color-mix(
+      in srgb,
+      var(--input-border-color) 60%,
+      var(--input-text)
+    );
+  }
 }
 
 button {
+  cursor: pointer;
   padding: 0.5rem 1rem;
+  border-radius: 24px;
+  color: var(--input-text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border-color);
+  outline: none;
   font-size: 1rem;
   font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  background: #646cff;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  transition: all 0.3s ease;
+  &:focus {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--input-text) 30%, transparent);
+  }
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+  &:hover {
+    background: var(--input-hover-bg);
+    color: var(--text-color-hover);
+    border-color: color-mix(
+      in srgb,
+      var(--input-border-color) 60%,
+      var(--input-text)
+    );
+  }
 }
 
-button:hover {
-  background: #535bf2;
-}
+.wrap-icon {
+  display: flex;
+  align-items: center;
+  &:not(button) :is(.icon-left, .icon-right) {
+    position: absolute;
+    z-index: 1;
+    &.icon-left {
+      left: auto;
+      margin-left: 1rem;
+    }
+    &.icon-right {
+      right: auto;
+      margin-right: 1rem;
+    }
+  }
 
-button:focus {
-  outline: 2px solid var(--outline-color);
-  outline-offset: 2px;
+  input {
+    &.has-icon-left {
+      padding-left: 2.5rem;
+    }
+    &.has-icon-right {
+      padding-right: 2.5rem;
+    }
+  }
+  &:is(button) {
+    .icon-left {
+      margin-right: 8px;
+    }
+    .icon-right {
+      margin-right: 8px;
+    }
+  }
 }
 
 /* Custom inside Liquid Glass */
 .liquid-glass.clickable {
   width: fit-content;
+  /* --bd-blur: 24; */
 
   button {
-    background: transparent;
+    /* background: transparent; */
+    border: 1px solid transparent;
     border-radius: inherit;
   }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-hover :is(i, span) {
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+.spin-hover:hover:not(:disabled) :is(i, span) {
+  transform: rotate(90deg);
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-10deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-6deg);
+  }
+  80% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.wiggle-hover:hover:not(:disabled) :is(i, span) {
+  animation: wiggle 0.6s ease-in-out infinite;
 }

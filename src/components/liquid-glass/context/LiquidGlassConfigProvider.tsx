@@ -31,6 +31,7 @@ interface BasePreset {
   width: number;
   height: number;
   frost: number;
+  bdBlur: number;
 }
 
 export interface LiquidGlassConfig extends BasePreset {
@@ -45,20 +46,20 @@ const base: BasePreset = {
   radius: 16,
   border: 0.02,
   lightness: 50,
-  displace: 0.2,
+  displace: 0,
   blend: "difference",
   x: "R",
   y: "B",
   alpha: 0.93,
-  blur: 5,
+  blur: 3,
   r: 0,
   g: 10,
   b: 20,
   saturation: 1,
-  // these are the ones that usually change
+  bdBlur: 2,
   width: 336,
   height: 96,
-  frost: 0.05,
+  frost: 0.33,
 };
 
 const configDefault: LiquidGlassConfig = {
@@ -106,6 +107,7 @@ const useConfig = () => {
       "--saturation": config.saturation,
       "--width": config.width,
       "--height": config.height,
+      "--bd-blur": config.bdBlur,
     });
     gsap.set("feDisplacementMap", {
       attr: {
@@ -146,7 +148,11 @@ const useConfig = () => {
     const sync = () => {
       const state = ctrl.exportState();
       const newState = extractBindings(state);
-      setConfig({ ...newState } as any);
+      setConfig((prev) => {
+        const newConfig = { ...prev, ...newState };
+        console.info(`HAI ::: -> sync -> newConfig:`, newConfig);
+        return newConfig;
+      });
     };
 
     ctrl.on("change", sync);
@@ -178,7 +184,8 @@ const useConfig = () => {
       { key: "alpha", min: 0, max: 1, step: 0.01 },
       { key: "lightness", min: 0, max: 100, step: 1 },
       { key: "blur", min: 0, max: 20, step: 1, label: "input blur" },
-      { key: "displace", min: 0, max: 12, step: 0.1, label: "output blur" },
+      // { key: "displace", min: 0, max: 12, step: 0.1, label: "output blur" },
+      { key: "bdBlur", min: 0, max: 12, step: 0.1, label: "backdrop blur" },
       {
         key: "x",
         label: "channel x",
@@ -219,15 +226,15 @@ const useConfig = () => {
       settings.addBinding(configDefault, key, opts)
     );
 
-    const chromatic = settings.addFolder({ title: "chromatic" });
-    ["r", "g", "b"].forEach((k) =>
-      chromatic.addBinding(configDefault, k as any, {
-        min: -100,
-        max: 100,
-        step: 1,
-        label: k === "r" ? "red" : k === "g" ? "green" : "blue",
-      })
-    );
+    // const chromatic = settings.addFolder({ title: "chromatic" });
+    // ["r", "g", "b"].forEach((k) =>
+    //   chromatic.addBinding(configDefault, k as any, {
+    //     min: -100,
+    //     max: 100,
+    //     step: 1,
+    //     label: k === "r" ? "red" : k === "g" ? "green" : "blue",
+    //   })
+    // );
 
     return () => {
       ctrl.dispose();

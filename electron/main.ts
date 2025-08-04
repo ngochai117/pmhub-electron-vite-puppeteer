@@ -2,6 +2,7 @@ import { app, BrowserWindow } from "electron";
 // import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { registerEvents } from "../src/handlers/events";
 
 // const require = createRequire(import.meta.url)
 
@@ -69,3 +70,5 @@ app.on("activate", () => {
 });
 
 app.whenReady().then(createWindow);
+
+registerEvents();

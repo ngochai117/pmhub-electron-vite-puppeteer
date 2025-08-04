@@ -2,56 +2,116 @@
 // import viteLogo from "/electron-vite.animate.svg";
 import gsap from "gsap";
 import "./App.css";
-import {
-  LiquidGlassConfig,
-  withLiquidGlassConfig,
-} from "./components/liquid-glass/context/LiquidGlassConfigProvider";
+import { withLiquidGlassConfig } from "./components/liquid-glass/context/LiquidGlassConfigProvider";
 import LiquidGlass from "./components/liquid-glass/LiquidGlass";
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Draggable } from "gsap/Draggable";
+import { ModalRoot } from "./components/ModalManager";
+import LicenseStatus from "./components/LicenseStatus";
+import ProjectsGrid from "./components/ProjectsGrid";
+import { ELECTRON_EVENTS } from "./constants";
+import { UserData } from "./types/user";
+import { LicenseResponseFE } from "./types/license";
 
 gsap.registerPlugin(Draggable);
 
-const glassButtonConfig: Partial<LiquidGlassConfig> = {
-  displace: 2,
-};
-
 const AppFC: React.FC = () => {
+  const [license, setLicense] = useState<LicenseResponseFE>();
+  const [userData, setUserData] = useState<UserData>();
+
+  useEffect(() => {
+    window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_USER_DATA).then(setLicense);
+    window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_LICENSE).then(setLicense);
+  }, []);
+
+  const addProjectRow = () => {
+    setUserData({
+      ...userData,
+      projects: [
+        ...(userData?.projects || []),
+        { id: String(Math.random()), rate: 0 },
+      ],
+    });
+  };
+
+  const removeProjectRow = (index: number) => {
+    setUserData({
+      ...userData,
+      projects: [...(userData?.projects || [])].filter((_, i) => i !== index),
+    });
+  };
+
+  const save = () => {
+    // Placeholder: To be implemented
+    console.log("Save clicked");
+  };
+
+  const runNow = () => {
+    // Placeholder: To be implemented
+    console.log("Run Now clicked");
+  };
+
   return (
-    <div className="flex flex-col py-[5%] px-[10%] gap-4">
-      <h1 className="heading">PM Auto Login</h1>
-      <LiquidGlass className="flex flex-col px-6 py-4 gap-3">
-        <input id="username" placeholder="Username" />
-        <input id="password" placeholder="Password" type="password" />
+    <div className="flex flex-col py-[5%] px-[10%] gap-(--gap)">
+      {/* <h1 className="heading">PM Auto Login</h1> */}
+
+      <LicenseStatus license={license} />
+
+      <LiquidGlass className="flex flex-col p-4 gap-(--gap)">
+        <div className="wrap-icon">
+          <i className="fa-solid fa-user icon-left"></i>
+          <input
+            className="has-icon-left"
+            id="username"
+            placeholder="Username"
+            value={userData?.username || ""}
+            onChange={(e) =>
+              setUserData({ ...userData, username: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="wrap-icon">
+          <i className="fa-solid fa-lock icon-left"></i>
+          <input
+            className="has-icon-left"
+            id="password"
+            placeholder="Password"
+            type="password"
+            value={userData?.password || ""}
+            onChange={(e) =>
+              setUserData({ ...userData, password: e.target.value })
+            }
+          />
+        </div>
+        <button>sdasdsdaksdhasdjkdasd</button>
       </LiquidGlass>
-      <LiquidGlass className="clickable" config={glassButtonConfig}>
-        <button type="button" className="flex">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-          </svg>
-          Thêm project
-        </button>
-      </LiquidGlass>
+
+      <ProjectsGrid
+        projects={userData?.projects}
+        addProjectRow={addProjectRow}
+        removeProjectRow={removeProjectRow}
+      />
 
       <div className="flex gap-4">
-        <LiquidGlass className="clickable" config={glassButtonConfig}>
-          <button id="saveBtn" onclick="save()" disabled>
-            💾 Lưu
+        <LiquidGlass className="clickable">
+          <button
+            id="saveBtn"
+            onClick={save}
+            className="wrap-icon wiggle-hover"
+            disabled
+          >
+            <i className="fa-solid fa-floppy-disk icon-left"></i> Lưu
           </button>
         </LiquidGlass>
-        <LiquidGlass className="clickable" config={glassButtonConfig}>
-          <button id="runBtn" onclick="runNow()" disabled>
-            🚀 Lưu & Chạy ngay
+        <LiquidGlass className="clickable">
+          <button
+            id="runBtn"
+            onClick={runNow}
+            className="wrap-icon wiggle-hover"
+          >
+            <i className="fa-solid fa-rocket icon-left icon-wiggle"></i> Lưu &
+            Chạy ngay
           </button>
         </LiquidGlass>
       </div>
