@@ -8,6 +8,7 @@ import {
   PropsWithChildren,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { BindingParams, Pane } from "tweakpane";
@@ -95,8 +96,46 @@ function extractBindings(node: any): FlatConfig {
   return result;
 }
 
+function applyTheme(theme: "light" | "dark" | "system") {
+  const root = document.documentElement;
+  const body = document.body;
+
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+  const effectiveTheme =
+    theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
+
+  // Gán class dark cho Tailwind
+  root.classList.toggle("dark", effectiveTheme === "dark");
+
+  // Gán data-theme cho CSS custom
+  if (theme === "system") {
+    root.removeAttribute("data-theme");
+  } else {
+    root.setAttribute("data-theme", theme);
+  }
+
+  // ✅ Set background cho body
+  if (effectiveTheme === "dark") {
+    body.style.background =
+      "url('https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800') center/cover";
+  } else {
+    body.style.background =
+      "url('https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png')  center/cover";
+  }
+}
+
 const useConfig = () => {
-  const [config, setConfig] = useState(configDefault);
+  const savedConfig = useMemo(() => {
+    const savedString = localStorage.getItem("config");
+    if (savedString) return JSON.parse(savedString) as LiquidGlassConfig;
+    return { ...configDefault };
+  }, []);
+
+  const [lastConfig, setLastConfig] = useState(savedConfig);
+
+  const [config, setConfig] = useState(savedConfig);
 
   useEffect(() => {
     // buildDisplacementImage();
@@ -139,7 +178,8 @@ const useConfig = () => {
 
     document.documentElement.dataset.top = String(config.top);
     document.documentElement.dataset.debug = String(config.debug);
-    document.documentElement.dataset.theme = config.theme;
+    // document.documentElement.dataset.theme = config.theme;
+    applyTheme(config.theme);
   }, [config]);
 
   useEffect(() => {
@@ -148,14 +188,21 @@ const useConfig = () => {
     const sync = () => {
       const state = ctrl.exportState();
       const newState = extractBindings(state);
+
       setConfig((prev) => {
         const newConfig = { ...prev, ...newState };
+        localStorage.setItem("config", JSON.stringify(newConfig));
         console.info(`HAI ::: -> sync -> newConfig:`, newConfig);
         return newConfig;
       });
     };
 
     ctrl.on("change", sync);
+
+    const btn = ctrl.addButton({
+      title: "Reset",
+      label: "Reset",
+    });
 
     // 🔽 Dùng mảng và loop
     const basicBindings: Binding[] = [
@@ -169,7 +216,7 @@ const useConfig = () => {
       },
     ];
     basicBindings.forEach(({ key, ...opts }) => {
-      ctrl.addBinding(configDefault, key, opts);
+      ctrl.addBinding(lastConfig, key, opts);
     });
 
     const settings = ctrl.addFolder({ title: "settings" });
@@ -223,7 +270,7 @@ const useConfig = () => {
       { key: "scale", min: -1000, max: 1000, step: 1 },
     ];
     settingBindings.forEach(({ key, ...opts }) =>
-      settings.addBinding(configDefault, key, opts)
+      settings.addBinding(lastConfig, key, opts)
     );
 
     // const chromatic = settings.addFolder({ title: "chromatic" });
@@ -236,10 +283,16 @@ const useConfig = () => {
     //   })
     // );
 
+    btn.on("click", () => {
+      localStorage.setItem("config", JSON.stringify(configDefault));
+      setConfig({ ...configDefault });
+      setLastConfig({ ...configDefault });
+    });
+
     return () => {
       ctrl.dispose();
     };
-  }, []);
+  }, [lastConfig]);
 
   return config;
 };

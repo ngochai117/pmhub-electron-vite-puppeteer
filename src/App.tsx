@@ -6,7 +6,6 @@ import { withLiquidGlassConfig } from "./components/liquid-glass/context/LiquidG
 import LiquidGlass from "./components/liquid-glass/LiquidGlass";
 import { memo, useEffect, useRef, useState } from "react";
 import { Draggable } from "gsap/Draggable";
-import { ModalRoot } from "./components/ModalManager";
 import LicenseStatus from "./components/LicenseStatus";
 import ProjectsGrid from "./components/ProjectsGrid";
 import { ELECTRON_EVENTS } from "./constants";
@@ -56,7 +55,6 @@ const AppFC: React.FC = () => {
       {/* <h1 className="heading">PM Auto Login</h1> */}
 
       <LicenseStatus license={license} />
-
       <LiquidGlass className="flex flex-col p-4 gap-(--gap)">
         <div className="wrap-icon">
           <i className="fa-solid fa-user icon-left"></i>
@@ -84,7 +82,6 @@ const AppFC: React.FC = () => {
             }
           />
         </div>
-        <button>sdasdsdaksdhasdjkdasd</button>
       </LiquidGlass>
 
       <ProjectsGrid

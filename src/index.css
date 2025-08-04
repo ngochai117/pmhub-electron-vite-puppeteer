@@ -18,6 +18,7 @@
   /* ==== Spacing & UI constants ==== */
   --gap: 1rem;
   --gap-inside: 0.75rem;
+  --padding: 1rem;
 
   /* ==== Theming ==== */
   color-scheme: light dark;
@@ -51,8 +52,6 @@ body {
   /* background: light-dark(#ffffff, #000000); */
 
   /* background: url(https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg) center/cover; */
-  background: url(https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png)
-    center/cover;
   background-size: 600px;
   /* -webkit-animation: moveBackground 60s linear infinite;
   animation: moveBackground 60s linear infinite; */
@@ -60,14 +59,10 @@ body {
 
 [data-theme="light"] :where(html, body) {
   color-scheme: light only;
-  background: url(https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png)
-    center/cover;
 }
 
 [data-theme="dark"] :where(html, body) {
   color-scheme: dark only;
-  background: url(https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800)
-    center/cover;
 }
 
 @keyframes moveBackground {
