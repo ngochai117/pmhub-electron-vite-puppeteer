@@ -1,13 +1,17 @@
 .liquid-glass {
   position: relative;
-  transition: all 0.3s ease-out;
+  transition: opacity 0.3s ease-out;
   border-radius: 28px;
 
   &.demo {
+    position: fixed;
     height: calc(var(--height) * 1px);
     width: calc(var(--width) * 1px);
     border-radius: calc(var(--radius) * 1px);
     z-index: 999999;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
   }
 
   &::before {

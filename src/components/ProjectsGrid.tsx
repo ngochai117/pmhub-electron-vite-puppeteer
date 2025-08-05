@@ -46,7 +46,7 @@ const ProjectsGrid: React.FC<Props> = (props) => {
       <AnimatePresence>
         {projects?.map((project, index) => (
           <motion.li
-            key={`project-${index}`}
+            key={`project-${project?.uniqueId || index}`}
             initial={{
               x: -50,
               scale: 0.8,
