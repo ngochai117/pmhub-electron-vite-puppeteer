@@ -61,7 +61,7 @@ export async function callApiBase<T = any>(
   try {
     const res: AxiosResponse = await axios(axiosConfig);
     const status = res?.status;
-    const response = decryptJSON(res.data);
+    const response = decryptJSON(res?.data);
     logJson({
       level: "success",
       msg: `API success ${status}`,
@@ -76,10 +76,10 @@ export async function callApiBase<T = any>(
     logJson({
       fn: "callApiBase",
       action: "response",
-      plainText: res.data,
+      plainText: res?.data,
     });
     const response = decryptJSON(res?.data);
-    const msg = response?.msg || error.message;
+    const msg = response?.msg || error?.message;
 
     logJson({
       level: "error",

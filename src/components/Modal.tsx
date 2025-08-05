@@ -33,8 +33,9 @@ const Modal: React.FC<Props> = (props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`fixed inset-0 backdrop-blur-sm bg-black/10 z-${zIndex}`}
+            className={`fixed inset-0 backdrop-blur-sm bg-black/10`}
             onClick={outsideClose ? requestClose : undefined}
+            style={{ zIndex }}
           />
 
           {/* modal */}
@@ -58,14 +59,14 @@ const Modal: React.FC<Props> = (props) => {
             className={`
               fixed
               min-w-[50%] max-w-[80%] rounded-2xl 
-              bg-(--input-bg) backdrop-blur-md 
+              bg-(--modal-body-bg) backdrop-blur-md 
               shadow-xl
-              origin-center border border-white/20 p-(--padding)
-              z-${zIndex + 1} 
+              origin-center border border-white/20 p-(--padding) 
               ${bodyClass || ""}`}
             style={{
               boxShadow:
-                "0 8px 24px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1)",
+                "0 8px 24px light-dark(rgba(0,0,0,0.2),rgba(255,255,255,0.1)), inset 0 0 0 1px light-dark(rgba(255,255,255,0.1), rgba(0,0,0,0.1))",
+              zIndex: zIndex + 1,
             }}
           >
             {children}

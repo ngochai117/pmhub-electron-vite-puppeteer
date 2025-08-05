@@ -1,16 +1,40 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import LiquidGlass from "./liquid-glass/LiquidGlass";
 import { Project } from "../types/user";
 import { motion, AnimatePresence } from "motion/react";
+import { getNumber } from "../utils/data";
 
 interface Props {
   projects?: Project[];
-  addProjectRow: () => void;
-  removeProjectRow: (index: number) => void;
+  updateProjects: (projects: Project[]) => void;
 }
 
 const ProjectsGrid: React.FC<Props> = (props) => {
-  const { projects, addProjectRow, removeProjectRow } = props || {};
+  const { projects: projectsProp, updateProjects } = props || {};
+
+  const projects = useMemo(() => {
+    return projectsProp && projectsProp?.length > 0
+      ? projectsProp
+      : [{ uniqueId: Date.now().toString() }];
+  }, [projectsProp]);
+
+  const addProjectRow = () => {
+    updateProjects([...(projects || []), { uniqueId: Date.now().toString() }]);
+  };
+
+  const removeProjectRow = (index: number) => {
+    updateProjects([...(projects || [])].filter((_, i) => i !== index));
+  };
+
+  const onChangeId = (index: number, value: string) => {
+    projects[index].id = value;
+    updateProjects([...projects]);
+  };
+
+  const onChangeRate = (index: number, value: string) => {
+    projects[index].rate = value === "" ? undefined : getNumber(value);
+    updateProjects([...projects]);
+  };
 
   const renderProjects = () => (
     <motion.ul
@@ -22,7 +46,7 @@ const ProjectsGrid: React.FC<Props> = (props) => {
       <AnimatePresence>
         {projects?.map((project, index) => (
           <motion.li
-            key={`project-${project.id || index}`}
+            key={`project-${index}`}
             initial={{
               x: -50,
               scale: 0.8,
@@ -39,13 +63,18 @@ const ProjectsGrid: React.FC<Props> = (props) => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <LiquidGlass className="p-4 flex flex-col gap-(--gap-inside)">
-              <input placeholder="Project ID" value={project.id} />
+              <input
+                placeholder="Project ID"
+                value={project.id}
+                onChange={(e) => onChangeId(index, e.target.value)}
+              />
               <input
                 placeholder="Rate Log (%)"
                 value={project.rate}
                 type="number"
                 min={0}
                 max={100}
+                onChange={(e) => onChangeRate(index, e.target.value)}
               />
 
               <button

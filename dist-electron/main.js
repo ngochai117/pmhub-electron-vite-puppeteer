@@ -1,4 +1,4 @@
-import { app, ipcMain, BrowserWindow } from "electron";
+import { app, ipcMain, nativeTheme, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path$5 from "node:path";
 import path$4 from "path";
@@ -24,8 +24,8 @@ const ELECTRON_EVENTS = {
   LOGIN: "LOGIN",
   GET_USER_DATA: "GET_USER_DATA",
   GET_LICENSE: "GET_LICENSE",
-  ACTIVATE_LICENSE_KEY: "ACTIVATE_LICENSE_KEY",
-  ACTIVATE_TRIAL: "ACTIVATE_TRIAL"
+  ACTIVATE_LICENSE: "ACTIVATE_LICENSE",
+  SWITCH_THEME: "SWITCH_THEME"
 };
 function logJson(obj) {
   const { level = "debug", ...rest } = obj;
@@ -25220,7 +25220,7 @@ async function getDeviceId() {
   const base = distExports.machineIdSync() + mac + cpuHash;
   const deviceId = createHash("sha256").update(base).digest("hex");
   logJson({ fn: "getDeviceId", deviceId });
-  return "device-id-test-4";
+  return "device-id-test-7";
 }
 function bind$2(fn, thisArg) {
   return function wrap2() {
@@ -41972,7 +41972,7 @@ async function callApiBase(config) {
   try {
     const res = await axios(axiosConfig);
     const status = res == null ? void 0 : res.status;
-    const response = decryptJSON(res.data);
+    const response = decryptJSON(res == null ? void 0 : res.data);
     logJson({
       level: "success",
       msg: `API success ${status}`,
@@ -41986,10 +41986,10 @@ async function callApiBase(config) {
     logJson({
       fn: "callApiBase",
       action: "response",
-      plainText: res.data
+      plainText: res == null ? void 0 : res.data
     });
     const response = decryptJSON(res == null ? void 0 : res.data);
-    const msg = (response == null ? void 0 : response.msg) || error.message;
+    const msg = (response == null ? void 0 : response.msg) || (error == null ? void 0 : error.message);
     logJson({
       level: "error",
       msg: `API Error ${status} : ${code}`,
@@ -42011,16 +42011,7 @@ async function getLicenseInfoViaServer() {
   });
   return (_a = res.response) == null ? void 0 : _a.data;
 }
-async function activateTrial() {
-  const deviceId = await getDeviceId();
-  const res = await callApiBase({
-    method: METHOD.POST,
-    path: PATH.ACTIVATE,
-    body: { deviceId }
-  });
-  return res;
-}
-async function activateKey(key) {
+async function activateLicense(key) {
   const deviceId = await getDeviceId();
   const res = await callApiBase({
     method: METHOD.POST,
@@ -42032,7 +42023,7 @@ async function activateKey(key) {
 function registerEvents() {
   ipcMain.on(
     ELECTRON_EVENTS.LOGIN,
-    async (_event, { username, password, projects, runNow }) => {
+    async (_event, { username, password, projects }) => {
       const data = { username, password, projects };
       writeFile(FILE_NAMES.USER_DATA, encryptJson(data));
     }
@@ -42055,15 +42046,13 @@ function registerEvents() {
       return null;
     }
   });
-  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_LICENSE_KEY, async (_event, key) => {
+  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_LICENSE, async (_event, key) => {
     var _a;
-    const res = await activateKey(key);
+    const res = await activateLicense(key);
     return { success: res.success, msg: (_a = res == null ? void 0 : res.response) == null ? void 0 : _a.msg };
   });
-  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_TRIAL, async () => {
-    var _a;
-    const res = await activateTrial();
-    return { success: res.success, msg: (_a = res == null ? void 0 : res.response) == null ? void 0 : _a.msg };
+  ipcMain.on(ELECTRON_EVENTS.SWITCH_THEME, async (_event, theme) => {
+    nativeTheme.themeSource = theme;
   });
 }
 const __dirname$1 = path$5.dirname(fileURLToPath(import.meta.url));

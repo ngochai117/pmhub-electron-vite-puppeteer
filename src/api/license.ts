@@ -13,17 +13,7 @@ export async function getLicenseInfoViaServer() {
   return res.response?.data;
 }
 
-export async function activateTrial() {
-  const deviceId = await getDeviceId();
-  const res = await callApiBase<LicenseResponseFE>({
-    method: METHOD.POST,
-    path: PATH.ACTIVATE,
-    body: { deviceId } as RequestActiveLicenseFE,
-  });
-  return res;
-}
-
-export async function activateKey(key: string) {
+export async function activateLicense(key?: string) {
   const deviceId = await getDeviceId();
   const res = await callApiBase<LicenseResponseFE>({
     method: METHOD.POST,

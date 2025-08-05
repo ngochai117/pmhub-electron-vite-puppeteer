@@ -13,6 +13,7 @@ import {
 } from "react";
 import { BindingParams, Pane } from "tweakpane";
 import LiquidGlass from "../LiquidGlass";
+import { ELECTRON_EVENTS } from "../../../constants";
 
 interface BasePreset {
   scale: number;
@@ -106,6 +107,7 @@ function applyTheme(theme: "light" | "dark" | "system") {
   const effectiveTheme =
     theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
 
+  window.ipcRenderer.send(ELECTRON_EVENTS.SWITCH_THEME, effectiveTheme);
   // Gán class dark cho Tailwind
   root.classList.toggle("dark", effectiveTheme === "dark");
 
@@ -122,7 +124,7 @@ function applyTheme(theme: "light" | "dark" | "system") {
       "url('https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800') center/cover";
   } else {
     body.style.background =
-      "url('https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png')  center/cover";
+      "url('https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png') center/cover";
   }
 }
 
@@ -183,6 +185,7 @@ const useConfig = () => {
   }, [config]);
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
     const ctrl = new Pane({ title: "config", expanded: false });
 
     const sync = () => {

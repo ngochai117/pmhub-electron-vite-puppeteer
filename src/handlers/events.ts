@@ -1,21 +1,17 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { ipcMain, nativeTheme } from "electron";
 
 import { ELECTRON_EVENTS, FILE_NAMES } from "../constants";
 import { writeFile } from "../utils/file";
 import { encryptJson } from "../utils/encrypts";
 import { getUserData } from "../utils/user";
 import { logJson } from "../utils/logger";
-import {
-  activateKey,
-  activateTrial,
-  getLicenseInfoViaServer,
-} from "../api/license";
+import { activateLicense, getLicenseInfoViaServer } from "../api/license";
 
 export function registerEvents() {
   // action login
   ipcMain.on(
     ELECTRON_EVENTS.LOGIN,
-    async (_event, { username, password, projects, runNow }) => {
+    async (_event, { username, password, projects }) => {
       const data = { username, password, projects };
       writeFile(FILE_NAMES.USER_DATA, encryptJson(data));
 
@@ -44,13 +40,12 @@ export function registerEvents() {
     }
   });
 
-  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_LICENSE_KEY, async (_event, key) => {
-    const res = await activateKey(key);
+  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_LICENSE, async (_event, key) => {
+    const res = await activateLicense(key);
     return { success: res.success, msg: res?.response?.msg };
   });
 
-  ipcMain.handle(ELECTRON_EVENTS.ACTIVATE_TRIAL, async () => {
-    const res = await activateTrial();
-    return { success: res.success, msg: res?.response?.msg };
+  ipcMain.on(ELECTRON_EVENTS.SWITCH_THEME, async (_event, theme) => {
+    nativeTheme.themeSource = theme;
   });
 }

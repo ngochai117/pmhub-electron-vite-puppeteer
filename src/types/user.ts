@@ -1,6 +1,7 @@
 export interface Project {
-  id: string;
-  rate: number; // 0 - 100
+  id?: string;
+  rate?: number; // 0 - 100
+  uniqueId?: string; //for animation
 }
 
 export interface UserData {

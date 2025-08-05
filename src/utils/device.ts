@@ -13,7 +13,7 @@ export async function getDeviceId(): Promise<string> {
   const deviceId = createHash("sha256").update(base).digest("hex");
   logJson({ fn: "getDeviceId", deviceId });
   // return deviceId;
-  return "device-id-test-4";
+  return "device-id-test-7";
 }
 
 export function isLikelyVirtualMachine(): boolean {

@@ -30,7 +30,8 @@ export interface LicenseResponseFE
   extends Omit<License, "createdAt" | "expiredAt"> {
   expiredAt?: Date;
   createdAt: Date;
-  valid: boolean;
+  activatedAt?: Date;
   isExpired?: boolean;
+  valid: boolean;
   remainingTime?: number; // milliseconds
 }

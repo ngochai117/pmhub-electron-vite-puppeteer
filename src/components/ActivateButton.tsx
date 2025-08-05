@@ -1,24 +1,113 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import LiquidGlass from "./liquid-glass/LiquidGlass";
 
 import React, { memo } from "react";
 import { LicenseResponseFE, LicenseType } from "../types/license";
 import Modal from "./Modal";
+import { ELECTRON_EVENTS } from "../constants";
 
 interface Props {
   license?: LicenseResponseFE;
+  onActivateSuccess?: () => void;
+}
+
+type MODAL_TYPE = "TRIAL" | "LICENSE";
+
+const MODAL_TEXT: Record<
+  MODAL_TYPE,
+  { title: ReactNode; desc: string; cta?: string }
+> = {
+  TRIAL: {
+    title: "🚀 Kích hoạt dùng thử",
+    desc: "Dùng thử full tính năng trong {{days}} ngày.",
+  },
+  LICENSE: {
+    title: (
+      <>
+        <i className="fa-solid fa-lock-open mr-2"></i>Nhập key
+      </>
+    ),
+    desc: "",
+  },
+};
+
+const MODAL_TEXT_2 = {
+  LOADING: (
+    <>
+      <div className="loading-spinner"></div>Đang kích hoạt
+    </>
+  ),
+  ACTIVATE: "Kích hoạt",
+  TRY: "Trải nghiệm ngay",
+  PLACE_HOLDER_INPUT: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
+  CLOSE: "Đóng",
+};
+
+interface ActivateModal {
+  type?: MODAL_TYPE;
+  title?: ReactNode;
+  desc?: string;
+  error?: string;
+  loading?: boolean;
+  key?: string;
+}
+
+interface SuccessModal {
+  type?: MODAL_TYPE;
+  title?: ReactNode;
+  desc?: string;
+}
+
+function isValidKey(key?: string) {
+  return (
+    key &&
+    key.length === MODAL_TEXT_2.PLACE_HOLDER_INPUT.length &&
+    key.split("-").length === 5
+  );
 }
 
 const ActivateButton: React.FC<Props> = (props) => {
   const [openMenu, setOpenMenu] = useState(false);
-  const [openActivateModal, setOpenActivateModal] = useState(false);
-  const { license } = props || {};
-  const { valid, type } = license || {};
+  const [licenseModal, setLicenseModal] = useState<ActivateModal>();
+  const [successModal, setSuccessModal] = useState<SuccessModal>();
+  const { license, onActivateSuccess } = props || {};
+  const { valid, type, durationMilliseconds } = license || {};
+  const trialDays = Math.floor(
+    (durationMilliseconds || 0) / (1000 * 60 * 60 * 24)
+  );
 
-  const handleMenuClick = () => {
+  const handleMenuClick = (type: MODAL_TYPE) => {
     setOpenMenu(false);
-    setOpenActivateModal(true);
+    setLicenseModal({ ...MODAL_TEXT[type], type });
   };
+
+  const activate = () => {
+    if (licenseModal) {
+      setLicenseModal({ ...licenseModal, loading: true, error: "" });
+      window.ipcRenderer
+        .invoke(ELECTRON_EVENTS.ACTIVATE_LICENSE, licenseModal.key)
+        .then((result) => {
+          if (result.success) {
+            setLicenseModal(undefined);
+            setSuccessModal({
+              title: licenseModal.title,
+              desc: "Kích hoạt thành công!",
+            });
+            onActivateSuccess?.();
+          } else {
+            setLicenseModal((prev) => ({
+              ...prev,
+              error: result?.msg || "Lỗi không xác định",
+              loading: false,
+            }));
+          }
+        });
+    }
+  };
+
+  const activateButtonDisabled =
+    licenseModal?.loading ||
+    (licenseModal?.type === "LICENSE" && !isValidKey(licenseModal?.key));
 
   const classNameButtonMenu =
     "py-2 px-4 rounded-lg cursor-pointer hover:bg-black/10 transition duration-200 ease-in-out hover:scale-105 active:scale-100 ho";
@@ -35,23 +124,26 @@ const ActivateButton: React.FC<Props> = (props) => {
   return (
     <>
       <div className="relative inline-block">
-        {(!valid || type === LicenseType.TRIAL) && (
+        {type && (!valid || type === LicenseType.TRIAL) && (
           <LiquidGlass className={"clickable z-11"}>
             <button
               className={`flex items-center justify-center w-10 h-10 rounded-full wiggle-infinite`}
               style={{ padding: 0 }}
-              // onClick={() => {
-              //   if (type === LicenseType.NEW) {
-              //     showActivationModal({ type: "key" });
-              //   } else if (type === LicenseType.TRIAL) {
-              //     showActivationModal({ type: "trial", days });
-              //   }
-              // }}
-              onClick={() => setOpenMenu((prev) => !prev)}
+              onClick={() => {
+                if (openMenu) {
+                  setOpenMenu(false);
+                  return;
+                }
+                if (type === LicenseType.NEW) {
+                  setOpenMenu(true);
+                } else {
+                  handleMenuClick("LICENSE");
+                }
+              }}
             >
               <i className="fa-solid fa-key"></i>
             </button>
-            {openMenu ? null : renderPing("top-0 right-0")}
+            {openMenu || licenseModal ? null : renderPing("top-0 right-0")}
           </LiquidGlass>
         )}
 
@@ -62,11 +154,14 @@ const ActivateButton: React.FC<Props> = (props) => {
           zIndex={10}
           outsideClose
         >
-          <div onClick={handleMenuClick} className={`${classNameButtonMenu}`}>
+          <div
+            onClick={() => handleMenuClick("TRIAL")}
+            className={`${classNameButtonMenu}`}
+          >
             Trial
           </div>
           <div
-            onClick={handleMenuClick}
+            onClick={() => handleMenuClick("LICENSE")}
             className={`${classNameButtonMenu} font-semibold`}
           >
             Active Key
@@ -75,22 +170,81 @@ const ActivateButton: React.FC<Props> = (props) => {
         </Modal>
       </div>
       <Modal
-        open={openActivateModal}
-        requestClose={() => setOpenActivateModal(false)}
+        open={!!licenseModal}
+        requestClose={() => setLicenseModal(undefined)}
         bodyClass="top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] backdrop-blur-md!"
         zIndex={20}
-        outsideClose
         closeButton
       >
-        {["Licc Key", "Delete", "Share"].map((label) => (
-          <div
-            key={label}
-            onClick={handleMenuClick}
-            className="py-2 px-4 rounded-lg cursor-pointer hover:bg-black/10 transition"
+        <h2 className="text-lg font-semibold">{licenseModal?.title}</h2>
+        {licenseModal?.desc ? (
+          <p className="mt-2 text-sm">
+            {licenseModal.desc?.replace(
+              "{{days}}",
+              trialDays?.toString() || ""
+            )}
+          </p>
+        ) : null}
+
+        {licenseModal?.type === "LICENSE" ? (
+          <input
+            type="text"
+            className="w-full p-2 border rounded mt-4"
+            placeholder={MODAL_TEXT_2.PLACE_HOLDER_INPUT}
+            value={licenseModal?.key}
+            onChange={(e) => {
+              const value = e.target.value
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, "")
+                .slice(0, 25);
+              const parts = value.match(/.{1,5}/g) || [];
+              setLicenseModal({
+                ...licenseModal,
+                key: parts.join("-"),
+              });
+            }}
+          />
+        ) : null}
+
+        {!!licenseModal?.error && (
+          <p className="mt-2 text-sm text-red-500">{licenseModal.error}</p>
+        )}
+
+        <div className="mt-6 flex justify-end">
+          <button
+            className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
+            disabled={activateButtonDisabled}
+            onClick={activate}
           >
-            {label}
-          </div>
-        ))}
+            {licenseModal?.loading
+              ? MODAL_TEXT_2.LOADING
+              : licenseModal?.type === "TRIAL"
+              ? MODAL_TEXT_2.TRY
+              : MODAL_TEXT_2.ACTIVATE}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={!!successModal}
+        requestClose={() => setSuccessModal(undefined)}
+        bodyClass="top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] backdrop-blur-md!"
+        zIndex={30}
+        closeButton
+      >
+        <h2 className="text-lg font-semibold">{successModal?.title}</h2>
+        {successModal?.desc ? (
+          <p className="mt-2 text-sm">{successModal.desc}</p>
+        ) : null}
+
+        <div className="mt-6 flex justify-end">
+          <button
+            className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
+            onClick={() => setSuccessModal(undefined)}
+          >
+            {MODAL_TEXT_2.CLOSE}
+          </button>
+        </div>
       </Modal>
     </>
   );
