@@ -1,6 +1,8 @@
-export interface ModalCommon {
+import { ReactNode } from "react";
+
+export interface InfoModalOptions {
   type: "error" | "warning" | "info" | "success";
-  title: string;
-  desc?: string;
-  cta?: string;
+  title: ReactNode;
+  desc?: ReactNode;
+  cta?: { title?: string; onClick?: () => void };
 }

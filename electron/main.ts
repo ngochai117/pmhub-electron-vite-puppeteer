@@ -7,7 +7,7 @@ import { ELECTRON_EVENTS } from "../src/constants";
 import { getArgValue } from "../src/utils/file";
 import { logJson } from "../src/utils/logger";
 import { checkUserDataValid, getUserData } from "../src/utils/user";
-import { ModalCommon } from "../src/types/modal";
+import { InfoModalOptions } from "../src/types/modal";
 import { getLicenseInfoViaServer } from "../src/api/license";
 import { UserData } from "../src/types/user";
 import { runPMHub } from "../src/puppeteer/puppeteer";
@@ -79,7 +79,7 @@ app.on("activate", () => {
 
 registerEvents();
 
-async function showPopup(params: ModalCommon) {
+async function showPopup(params: InfoModalOptions) {
   let needCreateWindow = false;
   if (app.isHidden()) app.show();
   if (!win) {

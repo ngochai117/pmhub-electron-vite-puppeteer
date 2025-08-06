@@ -5,6 +5,8 @@ import React, { memo } from "react";
 import { LicenseResponseFE, LicenseType } from "../types/license";
 import Modal from "./Modal";
 import { ELECTRON_EVENTS } from "../constants";
+import InfoModal from "./InfoModal";
+import { InfoModalOptions } from "../types/modal";
 
 interface Props {
   license?: LicenseResponseFE;
@@ -40,7 +42,6 @@ const MODAL_TEXT_2 = {
   ACTIVATE: "Kích hoạt",
   TRY: "Trải nghiệm ngay",
   PLACE_HOLDER_INPUT: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
-  CLOSE: "Đóng",
 };
 
 interface ActivateModal {
@@ -50,12 +51,6 @@ interface ActivateModal {
   error?: string;
   loading?: boolean;
   key?: string;
-}
-
-interface SuccessModal {
-  type?: MODAL_TYPE;
-  title?: ReactNode;
-  desc?: string;
 }
 
 function isValidKey(key?: string) {
@@ -69,7 +64,7 @@ function isValidKey(key?: string) {
 const ActivateButton: React.FC<Props> = (props) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [licenseModal, setLicenseModal] = useState<ActivateModal>();
-  const [successModal, setSuccessModal] = useState<SuccessModal>();
+  const [successModalOptions, setSuccessModal] = useState<InfoModalOptions>();
   const { license, onActivateSuccess } = props || {};
   const { valid, type, durationMilliseconds } = license || {};
   const trialDays = Math.floor(
@@ -90,8 +85,10 @@ const ActivateButton: React.FC<Props> = (props) => {
           if (result.success) {
             setLicenseModal(undefined);
             setSuccessModal({
+              type: "success",
               title: licenseModal.title,
               desc: "Kích hoạt thành công!",
+              cta: {},
             });
             onActivateSuccess?.();
           } else {
@@ -224,28 +221,12 @@ const ActivateButton: React.FC<Props> = (props) => {
           </button>
         </div>
       </Modal>
-
-      <Modal
-        open={!!successModal}
+      <InfoModal
+        open={!!successModalOptions}
         requestClose={() => setSuccessModal(undefined)}
-        bodyClass="top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] backdrop-blur-md!"
+        options={successModalOptions}
         zIndex={30}
-        closeButton
-      >
-        <h2 className="text-lg font-semibold">{successModal?.title}</h2>
-        {successModal?.desc ? (
-          <p className="mt-2 text-sm">{successModal.desc}</p>
-        ) : null}
-
-        <div className="mt-6 flex justify-end">
-          <button
-            className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
-            onClick={() => setSuccessModal(undefined)}
-          >
-            {MODAL_TEXT_2.CLOSE}
-          </button>
-        </div>
-      </Modal>
+      />
     </>
   );
 };

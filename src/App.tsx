@@ -2,10 +2,7 @@
 // import viteLogo from "/electron-vite.animate.svg";
 import gsap from "gsap";
 import "./App.css";
-import {
-  useLiquidGlassConfig,
-  withLiquidGlassConfig,
-} from "./components/liquid-glass/context/LiquidGlassConfigProvider";
+import { withLiquidGlassConfig } from "./components/liquid-glass/context/LiquidGlassConfigProvider";
 import LiquidGlass from "./components/liquid-glass/LiquidGlass";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Draggable } from "gsap/Draggable";
@@ -15,12 +12,16 @@ import { ELECTRON_EVENTS } from "./constants";
 import { Project, UserData } from "./types/user";
 import { LicenseResponseFE } from "./types/license";
 import { getNumber } from "./utils/data";
-import { getEffectiveTheme, Theme } from "./utils/theme";
+import { Theme, useSystemTheme } from "./utils/theme";
+import InfoModal from "./components/InfoModal";
+import { InfoModalOptions } from "./types/modal";
 
 gsap.registerPlugin(Draggable);
 
 const AppFC: React.FC = () => {
-  const { theme } = useLiquidGlassConfig();
+  const effectiveTheme = useSystemTheme();
+  const [infoModalOptions, setInfoModalOptions] = useState<InfoModalOptions>();
+
   const [license, setLicense] = useState<LicenseResponseFE>();
   const [userData, setUserData] = useState<UserData>();
   const { valid } = license || {};
@@ -33,6 +34,17 @@ const AppFC: React.FC = () => {
   useEffect(() => {
     window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_USER_DATA).then(setUserData);
     window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_LICENSE).then(setLicense);
+  }, []);
+
+  useEffect(() => {
+    const handle = (event: any, params: any) => {
+      setInfoModalOptions(params ? { cta: {}, ...params } : undefined);
+    };
+    window.ipcRenderer.on(ELECTRON_EVENTS.SHOW_MODAL, handle);
+
+    return () => {
+      window.ipcRenderer?.removeListener(ELECTRON_EVENTS.SHOW_MODAL, handle);
+    };
   }, []);
 
   const onActivateSuccess = useCallback(() => {
@@ -66,7 +78,6 @@ const AppFC: React.FC = () => {
   );
   const validRun = validSave && valid;
 
-  const effectiveTheme = getEffectiveTheme(theme);
   const backgroundImage =
     effectiveTheme === Theme.dark
       ? "https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800"
@@ -148,6 +159,12 @@ const AppFC: React.FC = () => {
           </LiquidGlass>
         </div>
       </div>
+      <InfoModal
+        open={!!infoModalOptions}
+        requestClose={() => setInfoModalOptions(undefined)}
+        options={infoModalOptions}
+        zIndex={100}
+      />
     </>
   );
 };

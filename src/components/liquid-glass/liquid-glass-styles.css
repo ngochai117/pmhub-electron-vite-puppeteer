@@ -1,6 +1,6 @@
 .liquid-glass {
   position: relative;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease, scale 0.3s ease;
   border-radius: 28px;
 
   &.demo {

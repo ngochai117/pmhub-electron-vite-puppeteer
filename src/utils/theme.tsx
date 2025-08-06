@@ -1,37 +1,45 @@
+import { useEffect, useState } from "react";
+import { ELECTRON_EVENTS } from "../constants";
+
 export const Theme = {
   system: "system",
   light: "light",
   dark: "dark",
 } as const;
 
-export function getEffectiveTheme(theme: string) {
-  const systemPrefersDark = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
-  const effectiveTheme =
-    theme === Theme.system
-      ? systemPrefersDark
-        ? Theme.dark
-        : Theme.light
-      : theme;
-  return effectiveTheme;
-}
+export function useSystemTheme(): "light" | "dark" {
+  const [theme, setTheme] = useState<"light" | "dark">(
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  );
 
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => {
+      setTheme(media.matches ? "dark" : "light");
+    };
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
+
+  return theme;
+}
 export function applyTheme(theme: string) {
   const root = document.documentElement;
   // const body = document.body;
 
-  const effectiveTheme = getEffectiveTheme(theme);
-
-  // window.ipcRenderer.send(ELECTRON_EVENTS.SWITCH_THEME, effectiveTheme);
+  window.ipcRenderer.send(ELECTRON_EVENTS.SWITCH_THEME, theme);
   // Gán class dark cho Tailwind
-  root.classList.toggle("dark", effectiveTheme === "dark");
-
+  // root.classList.toggle("dark", effectiveTheme === "dark");
+  console.log({
+    hasDarkClass: document.documentElement.classList.contains("dark"),
+    htmlClass: document.documentElement.className,
+    bodyClass: document.body.className,
+  });
   // Gán data-theme cho CSS custom
   if (theme === Theme.system) {
     root.removeAttribute("data-theme");
   } else {
-    root.setAttribute("data-theme", effectiveTheme);
+    root.setAttribute("data-theme", theme);
   }
 
   // ✅ Set background cho body

@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import React, { memo } from "react";
 
-interface Props {
+export interface ModalProps {
   open: boolean;
   requestClose?: () => void;
   children: React.ReactNode;
@@ -12,7 +12,7 @@ interface Props {
   closeButton?: boolean;
 }
 
-const Modal: React.FC<Props> = (props) => {
+const Modal: React.FC<ModalProps> = (props) => {
   const {
     open,
     requestClose,
