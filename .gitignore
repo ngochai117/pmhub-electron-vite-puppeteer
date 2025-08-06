@@ -15,6 +15,7 @@ dist-ssr
 release
 package-lock.json
 yarn.lock
+cache
 
 # Editor directories and files
 .vscode/*

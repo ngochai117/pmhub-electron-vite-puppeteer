@@ -1,12 +1,22 @@
 import { app } from "electron";
-import path from "path";
 import fs from "fs";
 import { logJson } from "./logger";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export function getArgValue(flag: string): string | undefined {
+  const arg = process.argv.find((arg) => arg.startsWith(`${flag}=`));
+  return arg?.split("=")[1];
+}
 
 export function getConfigPath(fileName: string) {
   const isDev = !app.isPackaged;
+  const devDir = path.join(__dirname, "..", "cache");
+
   return isDev
-    ? path.resolve(__dirname, `../${fileName}`)
+    ? path.join(devDir, fileName)
     : path.join(app.getPath("userData"), fileName);
 }
 

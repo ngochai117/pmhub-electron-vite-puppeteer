@@ -31,7 +31,7 @@ const AppFC: React.FC = () => {
   );
 
   useEffect(() => {
-    window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_USER_DATA).then(setLicense);
+    window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_USER_DATA).then(setUserData);
     window.ipcRenderer.invoke(ELECTRON_EVENTS.GET_LICENSE).then(setLicense);
   }, []);
 
@@ -46,11 +46,16 @@ const AppFC: React.FC = () => {
   const save = () => {
     // Placeholder: To be implemented
     console.log("Save clicked");
+    window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, userData);
   };
 
   const runNow = () => {
     // Placeholder: To be implemented
     console.log("Run Now clicked");
+    window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, {
+      ...userData,
+      runNow: true,
+    });
   };
 
   const validSave = !!(

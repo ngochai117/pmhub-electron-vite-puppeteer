@@ -9,7 +9,7 @@ export const getUserData = async () => {
   return decryptJSON<UserData>(await readFile(FILE_NAMES.USER_DATA));
 };
 
-export const checkUserDataValid = (userData: UserData) => {
+export const checkUserDataValid = (userData?: UserData) => {
   return (
     userData?.username &&
     userData?.password &&
@@ -17,6 +17,6 @@ export const checkUserDataValid = (userData: UserData) => {
   );
 };
 
-export const checkLicenseValid = (license: LicenseResponseFE) => {
+export const checkLicenseValid = (license?: LicenseResponseFE) => {
   return !!license?.valid;
 };

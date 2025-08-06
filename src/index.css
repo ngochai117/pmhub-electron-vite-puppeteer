@@ -51,7 +51,7 @@ body {
   font-size: medium;
 
   color: var(--text-color);
-  /* background: light-dark(#ffffff, #000000); */
+  background: light-dark(#ffffff, #000000);
 
   /* background: url(https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg) center/cover; */
   background-size: 600px;

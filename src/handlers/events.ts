@@ -6,16 +6,17 @@ import { encryptJson } from "../utils/encrypts";
 import { getUserData } from "../utils/user";
 import { logJson } from "../utils/logger";
 import { activateLicense, getLicenseInfoViaServer } from "../api/license";
+import { runTool } from "../../electron/main";
 
 export function registerEvents() {
   // action login
   ipcMain.on(
     ELECTRON_EVENTS.LOGIN,
-    async (_event, { username, password, projects }) => {
+    async (_event, { username, password, projects, runNow }) => {
       const data = { username, password, projects };
       writeFile(FILE_NAMES.USER_DATA, encryptJson(data));
 
-      // if (runNow) runTool(data);
+      if (runNow) runTool(data);
     }
   );
 

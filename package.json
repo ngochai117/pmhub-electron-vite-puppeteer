@@ -7,11 +7,13 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev-silent": "electron ./dist-electron/main.js --silent"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
+    "bufferutil": "^4.0.9",
     "crypto-js": "^4.2.0",
     "gsap": "^3.13.0",
     "macaddress": "^0.5.3",
@@ -23,7 +25,8 @@
     "react-dom": "^18.2.0",
     "systeminformation": "^5.27.7",
     "tailwindcss": "^4.1.11",
-    "tweakpane": "4"
+    "tweakpane": "4",
+    "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
     "@tweakpane/core": "^2.0.5",

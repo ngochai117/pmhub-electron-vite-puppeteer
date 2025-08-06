@@ -3,6 +3,14 @@ import { app, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { registerEvents } from "../src/handlers/events";
+import { ELECTRON_EVENTS } from "../src/constants";
+import { getArgValue } from "../src/utils/file";
+import { logJson } from "../src/utils/logger";
+import { checkUserDataValid, getUserData } from "../src/utils/user";
+import { ModalCommon } from "../src/types/modal";
+import { getLicenseInfoViaServer } from "../src/api/license";
+import { UserData } from "../src/types/user";
+import { runPMHub } from "../src/puppeteer/puppeteer";
 
 // const require = createRequire(import.meta.url)
 
@@ -69,6 +77,69 @@ app.on("activate", () => {
   }
 });
 
-app.whenReady().then(createWindow);
-
 registerEvents();
+
+async function showPopup(params: ModalCommon) {
+  let needCreateWindow = false;
+  if (app.isHidden()) app.show();
+  if (!win) {
+    needCreateWindow = true;
+    await app.whenReady().then(createWindow);
+  }
+  if (needCreateWindow) {
+    win?.webContents?.once("did-finish-load", () => {
+      win?.webContents.send(ELECTRON_EVENTS.SHOW_MODAL, params);
+    });
+  } else {
+    win?.webContents.send(ELECTRON_EVENTS.SHOW_MODAL, params);
+  }
+}
+
+export async function runTool(userData?: UserData, action?: string) {
+  if (!checkUserDataValid(userData)) {
+    showPopup({
+      type: "error",
+      title: "user data",
+    });
+    return;
+  }
+  const license = await getLicenseInfoViaServer();
+  if (!license) {
+    showPopup({
+      type: "error",
+      title: "license info",
+    });
+    return;
+  }
+
+  const result = await runPMHub(userData as Required<UserData>, action);
+
+  if (result?.success) {
+    // app.quit();
+  } else {
+    showPopup({
+      title: "",
+      type: "error",
+      desc: result?.msg || "Lỗi không xác định",
+    });
+  }
+}
+
+async function runMain() {
+  const silent = process.argv.includes("--silent");
+  const action = getArgValue("--action");
+
+  if (silent) {
+    logJson({ action: "run background" });
+    app.dock?.hide();
+
+    const userData = await getUserData();
+
+    await runTool(userData, action);
+  } else {
+    logJson({ action: "run force ground" });
+    app.whenReady().then(createWindow);
+  }
+}
+
+runMain();

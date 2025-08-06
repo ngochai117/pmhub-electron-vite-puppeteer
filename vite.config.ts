@@ -29,4 +29,9 @@ export default defineConfig({
           : {},
     }),
   ],
+  server: {
+    watch: {
+      ignored: ["**/cache/**"],
+    },
+  },
 });
