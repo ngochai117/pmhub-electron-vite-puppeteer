@@ -27,14 +27,10 @@ export function applyTheme(theme: string) {
   const root = document.documentElement;
   // const body = document.body;
 
+  //update for electron + tailwind
   window.ipcRenderer.send(ELECTRON_EVENTS.SWITCH_THEME, theme);
   // Gán class dark cho Tailwind
   // root.classList.toggle("dark", effectiveTheme === "dark");
-  console.log({
-    hasDarkClass: document.documentElement.classList.contains("dark"),
-    htmlClass: document.documentElement.className,
-    bodyClass: document.body.className,
-  });
   // Gán data-theme cho CSS custom
   if (theme === Theme.system) {
     root.removeAttribute("data-theme");

@@ -29,26 +29,33 @@ export const runPMHub = async (
   const page = await browser.newPage();
   // await page.setViewport({ width: 1080, height: 1024 });
 
-  const login = new Login(page);
-  const loginSuccess = await login.checkAndLogin(username, password);
+  try {
+    const login = new Login(page);
+    const loginSuccess = await login.checkAndLogin(username, password);
 
-  if (!loginSuccess) {
+    if (!loginSuccess) {
+      browser.close();
+      return {
+        success: false,
+        msg: "Đăng nhập thất bại",
+      };
+    }
+
+    await delay();
+
+    const dashboard = new Dashboard(page);
+    const result =
+      action === "deleteLog"
+        ? await dashboard.deleteAllLogTime()
+        : await dashboard.logTime(projects);
+
+    browser.close();
+    return result;
+  } catch (error: any) {
     browser.close();
     return {
       success: false,
-      msg: "Login failed",
+      msg: error,
     };
   }
-
-  await delay();
-
-  const dashboard = new Dashboard(page);
-  const result =
-    action === "deleteLog"
-      ? await dashboard.deleteAllLogTime()
-      : await dashboard.logTime(projects);
-
-  // browser.close();
-
-  return result;
 };

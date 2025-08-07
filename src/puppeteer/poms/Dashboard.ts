@@ -263,8 +263,9 @@ export default class Dashboard {
 
     await this.waitSelector("tbody.mud-table-body > tr");
     const rows = await this.page.$$("tbody.mud-table-body > tr");
-    if (!rows || rows.length === 0)
-      return { success: false, msg: "Không có log work nào tồn tại" };
+    if (!rows || rows.length === 0) {
+      return { success: false, msg: "ℹ️ Không có log work nào để xoá." };
+    }
 
     let hasDeleted = false;
     let iteration = 0;

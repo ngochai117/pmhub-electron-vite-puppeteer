@@ -99,7 +99,8 @@ export async function runTool(userData?: UserData, action?: string) {
   if (!checkUserDataValid(userData)) {
     showPopup({
       type: "error",
-      title: "user data",
+      title: "Thông tin không chính xác",
+      desc: "Vui lòng nhập đầy đủ thông tin user và tối thiểu một project",
     });
     return;
   }
@@ -107,7 +108,8 @@ export async function runTool(userData?: UserData, action?: string) {
   if (!license) {
     showPopup({
       type: "error",
-      title: "license info",
+      title: "License",
+      desc: "Vui lòng kích hoạt để sử dụng tính năng",
     });
     return;
   }
@@ -118,7 +120,7 @@ export async function runTool(userData?: UserData, action?: string) {
     // app.quit();
   } else {
     showPopup({
-      title: "",
+      title: "Lỗi thực thi",
       type: "error",
       desc: result?.msg || "Lỗi không xác định",
     });

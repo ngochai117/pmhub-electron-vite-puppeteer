@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, SVGProps, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { LiquidGlassConfig } from "./context/LiquidGlassConfigProvider";
 
@@ -67,6 +67,12 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
     });
   }, [borderRadius, config, height, width]);
 
+  const feDisplacementMapProps: SVGProps<SVGFEDisplacementMapElement> = {
+    scale: config.scale,
+    xChannelSelector: config.x,
+    yChannelSelector: config.y,
+  };
+
   return (
     <>
       <svg className="filter" xmlns="http://www.w3.org/2000/svg">
@@ -96,6 +102,8 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
               xChannelSelector="R"
               yChannelSelector="G"
               result="dispRed"
+              {...feDisplacementMapProps}
+              scale={config.scale + config.r}
             />
             <feColorMatrix
               in="dispRed"
@@ -113,6 +121,8 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
               xChannelSelector="R"
               yChannelSelector="G"
               result="dispGreen"
+              {...feDisplacementMapProps}
+              scale={config.scale + config.g}
             />
             <feColorMatrix
               in="dispGreen"
@@ -130,6 +140,8 @@ const LiquidGlassFilter: React.FC<Props> = (props) => {
               xChannelSelector="R"
               yChannelSelector="G"
               result="dispBlue"
+              {...feDisplacementMapProps}
+              scale={config.scale + config.b}
             />
             <feColorMatrix
               in="dispBlue"

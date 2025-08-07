@@ -109,7 +109,6 @@ const useConfig = () => {
   const [config, setConfig] = useState(savedConfig);
 
   useEffect(() => {
-    // buildDisplacementImage();
     gsap.set(document.documentElement, {
       "--radius": config.radius,
       "--frost": config.frost,
@@ -119,33 +118,6 @@ const useConfig = () => {
       "--height": config.height,
       "--bd-blur": config.bdBlur,
     });
-    gsap.set("feDisplacementMap", {
-      attr: {
-        scale: config.scale,
-        xChannelSelector: config.x,
-        yChannelSelector: config.y,
-      },
-    });
-    gsap.set("#redchannel", {
-      attr: {
-        scale: config.scale + config.r,
-      },
-    });
-    gsap.set("#greenchannel", {
-      attr: {
-        scale: config.scale + config.g,
-      },
-    });
-    gsap.set("#bluechannel", {
-      attr: {
-        scale: config.scale + config.b,
-      },
-    });
-    // gsap.set("feGaussianBlur", {
-    //   attr: {
-    //     stdDeviation: config.displace,
-    //   },
-    // });
 
     document.documentElement.dataset.top = String(config.top);
     document.documentElement.dataset.debug = String(config.debug);
@@ -183,14 +155,13 @@ const useConfig = () => {
     const basicBindings: Binding[] = [
       { key: "demo" },
       { key: "debug" },
-      { key: "top" },
+      // { key: "top" },
       {
         key: "theme",
         options: Theme,
         label: "theme",
       },
     ];
-    console.info(`HAI ::: -> useConfig -> lastConfig:`, lastConfig);
     basicBindings.forEach(({ key, ...opts }) => {
       ctrl.addBinding(lastConfig, key, opts);
     });
