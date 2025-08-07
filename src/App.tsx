@@ -100,7 +100,7 @@ const AppFC: React.FC = () => {
           license={license}
           onActivateSuccess={onActivateSuccess}
         />
-        {/* <LiquidGlass className="flex flex-col p-4 gap-(--gap)">
+        <LiquidGlass className="flex flex-col p-4 gap-(--gap)">
           <div className="wrap-icon">
             <i className="fa-solid fa-user icon-left"></i>
             <input
@@ -127,7 +127,7 @@ const AppFC: React.FC = () => {
               }
             />
           </div>
-        </LiquidGlass> */}
+        </LiquidGlass>
 
         <ProjectsGrid
           projects={userData?.projects}

@@ -93,21 +93,19 @@ const ProjectsGrid: React.FC<Props> = (props) => {
   );
 
   return (
-    <AnimatePresence>
-      <div className="flex flex-col gap-(--gap)">
-        {renderProjects()}
-        <LiquidGlass className="clickable">
-          <button
-            type="button"
-            className="flex wrap-icon"
-            onClick={addProjectRow}
-          >
-            <i className="fa-solid fa-plus icon-left spin-hover"></i>
-            Thêm project
-          </button>
-        </LiquidGlass>
-      </div>
-    </AnimatePresence>
+    <div className="flex flex-col gap-(--gap)">
+      {renderProjects()}
+      <LiquidGlass className="clickable">
+        <button
+          type="button"
+          className="flex wrap-icon"
+          onClick={addProjectRow}
+        >
+          <i className="fa-solid fa-plus icon-left spin-hover"></i>
+          Thêm project
+        </button>
+      </LiquidGlass>
+    </div>
   );
 };
 
