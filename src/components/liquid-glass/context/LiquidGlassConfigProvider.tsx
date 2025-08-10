@@ -32,7 +32,7 @@ interface BasePreset {
   saturation: number;
   width: number;
   height: number;
-  frost: number;
+  bgOpacity: number;
   bdBlur: number;
 }
 
@@ -58,10 +58,10 @@ const base: BasePreset = {
   g: 10,
   b: 20,
   saturation: 1,
-  bdBlur: 2,
+  bdBlur: 1,
   width: 336,
   height: 96,
-  frost: 0.33,
+  bgOpacity: 0.1,
 };
 
 const configDefault: LiquidGlassConfig = {
@@ -111,7 +111,7 @@ const useConfig = () => {
   useEffect(() => {
     gsap.set(document.documentElement, {
       "--radius": config.radius,
-      "--frost": config.frost,
+      "--bg-opacity": config.bgOpacity,
       // "--output-blur": config.displace,
       "--saturation": config.saturation,
       "--width": config.width,
@@ -169,7 +169,7 @@ const useConfig = () => {
     const settings = ctrl.addFolder({ title: "settings" });
 
     const settingBindings: Binding[] = [
-      { key: "frost", min: 0, max: 1, step: 0.01 },
+      { key: "bgOpacity", min: 0, max: 1, step: 0.01, label: "opacity" },
       { key: "saturation", min: 0, max: 2, step: 0.1 },
       { key: "width", min: 80, max: 1000, step: 1, label: "width (px)" },
       { key: "height", min: 35, max: 1000, step: 1, label: "height (px)" },

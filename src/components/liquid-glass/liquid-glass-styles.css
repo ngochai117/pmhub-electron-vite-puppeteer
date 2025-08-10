@@ -24,10 +24,10 @@
     pointer-events: none;
     transition: all 0.3s ease-out;
 
-    /* background: light-dark(
-      hsl(0 0% 100% / var(--frost, 0)),
-      hsl(0 0% 100% / var(--frost, 0))
-    ); */
+    background: light-dark(
+      hsl(0 0% 100% / var(--bg-opacity, 0)),
+      hsl(0 0% 0% / var(--bg-opacity, 0))
+    );
 
     /* box-shadow: 0 0 2px 1px
         light-dark(
@@ -87,7 +87,6 @@
         color-mix(in srgb, var(--glass-reflex-outer-color) 10%, transparent),
       0px 6px 16px 0px
         color-mix(in srgb, var(--glass-reflex-outer-color) 8%, transparent);
-    background: light-dark(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15));
   }
 
   &::after {

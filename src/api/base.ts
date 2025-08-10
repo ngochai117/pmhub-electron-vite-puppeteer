@@ -4,9 +4,9 @@ import qs from "querystring";
 import { CallApiBaseConfig, CallApiBaseResponse, METHOD } from "../types/api";
 import { decryptJSON, encryptData, encryptJson } from "../utils/encrypts";
 
-export const DOMAIN = "http://localhost:8080";
-// export const DOMAIN =
-//   "https://pmhub-server-267683729174.asia-southeast1.run.app";
+// export const DOMAIN = "http://localhost:8080";
+export const DOMAIN =
+  "https://pmhub-server-267683729174.asia-southeast1.run.app";
 
 export const PATH = {
   LICENSE_INFO: "/license-info",

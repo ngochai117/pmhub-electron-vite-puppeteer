@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { MediaHTMLAttributes, useEffect, useState } from "react";
 import { ELECTRON_EVENTS } from "../constants";
+import { motion } from "framer-motion";
 
 export const Theme = {
   system: "system",
@@ -7,7 +8,7 @@ export const Theme = {
   dark: "dark",
 } as const;
 
-export function useSystemTheme(): "light" | "dark" {
+function useSystemTheme(): "light" | "dark" {
   const [theme, setTheme] = useState<"light" | "dark">(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
@@ -37,25 +38,75 @@ export function applyTheme(theme: string) {
   } else {
     root.setAttribute("data-theme", theme);
   }
+}
 
-  // ✅ Set background cho body
-  // const backgroundImage = document.getElementById("background-image");
-  // if (!backgroundImage) return;
-  // if (effectiveTheme === "dark") {
-  //   backgroundImage.style.background =
-  //     "url('https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800') center/cover";
-  // } else {
-  //   backgroundImage.style.background =
-  //     "url('https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png') center/cover";
-  // }
+const duration = 500;
 
-  // if (effectiveTheme === "dark") {
-  //   setBackgroundSmoothly(
-  //     "https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800"
-  //   );
-  // } else {
-  //   setBackgroundSmoothly(
-  //     "https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png"
-  //   );
-  // }
+const videoBase: Partial<MediaHTMLAttributes<HTMLVideoElement>> = {
+  style: {
+    width: "100vw",
+    height: "100vh",
+    objectFit: "fill", // you can change to 'cover' if you prefer no stretching
+    display: "block",
+    willChange: "opacity",
+  },
+  autoPlay: true,
+  muted: true,
+  loop: true,
+  playsInline: true,
+  className: "fixed inset-0 pointer-events-none z-[-999]",
+};
+
+const variants = {
+  visible: {
+    opacity: 1,
+    transition: { when: "beforeChildren" },
+  },
+  hidden: { opacity: 0, transition: { when: "afterChildren" } },
+};
+
+export function ThemeBackground() {
+  const theme = useSystemTheme();
+
+  // const backgroundImage =
+  //   theme === Theme.dark
+  //     ? "https://i.pinimg.com/1200x/b8/1d/48/b81d48a7f323e4c85775f41114cb3b65.jpg"
+  //     : "https://i.pinimg.com/1200x/8f/b1/38/8fb138947d35d4bf2493904484a4a77f.jpg";
+
+  return (
+    <>
+      {/* <div
+        className="z-[-999] fixed inset-0 pointer-events-none"
+        style={{
+          transition: "background 0.5s ease",
+          background: `url('${backgroundImage}') center/cover`,
+        }}
+      ></div> */}
+      {/* fall back background color */}
+      <div
+        className="fixed inset-0 pointer-events-none z-[-99999]"
+        style={{
+          background: "light-dark(#ffffff, #000000)",
+          transition: `background-color ${duration / 1000}s ease`,
+        }}
+      />
+      {/* Dark theme video */}
+      <motion.div
+        initial={theme === Theme.dark ? variants.visible : variants.hidden}
+        animate={theme === Theme.dark ? variants.visible : variants.hidden}
+        exit={theme === Theme.dark ? variants.hidden : variants.visible}
+        transition={{ duration }}
+      >
+        <video {...videoBase} src="/video-corgi-dark.mp4"></video>
+      </motion.div>
+      <motion.div
+        initial={theme === Theme.light ? variants.visible : variants.hidden}
+        animate={theme === Theme.light ? variants.visible : variants.hidden}
+        exit={theme === Theme.light ? variants.hidden : variants.visible}
+        transition={{ duration }}
+      >
+        <video {...videoBase} src="/video-cat-light.mp4"></video>
+      </motion.div>
+    </>
+  );
 }

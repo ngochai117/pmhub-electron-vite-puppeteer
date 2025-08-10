@@ -12,14 +12,13 @@ import { ELECTRON_EVENTS } from "./constants";
 import { Project, UserData } from "./types/user";
 import { LicenseResponseFE } from "./types/license";
 import { getNumber } from "./utils/data";
-import { Theme, useSystemTheme } from "./utils/theme";
+import { ThemeBackground } from "./utils/theme";
 import InfoModal from "./components/InfoModal";
 import { InfoModalOptions } from "./types/modal";
 
 gsap.registerPlugin(Draggable);
 
 const AppFC: React.FC = () => {
-  const effectiveTheme = useSystemTheme();
   const [infoModalOptions, setInfoModalOptions] = useState<InfoModalOptions>();
 
   const [license, setLicense] = useState<LicenseResponseFE>();
@@ -78,21 +77,9 @@ const AppFC: React.FC = () => {
   );
   const validRun = validSave && valid;
 
-  const backgroundImage =
-    effectiveTheme === Theme.dark
-      ? "https://lh3.googleusercontent.com/rhODm7jWpKv2LG798WhqbrqPuoEfonh7po2NYBUfJ8m9JPyFl_I2wzYe9GloVqln-Hwc-wtRfb1y9mrxVsCZwF0NIg=s1280-w1280-h800"
-      : "https://storage.googleapis.com/support-forums-api/attachment/thread-198679870-3857371181782048850.png";
-
   return (
     <>
-      <div
-        id="#background-image"
-        className="z-[-999] fixed inset-0 pointer-events-none"
-        style={{
-          transition: "background 0.5s ease",
-          background: `url('${backgroundImage}') center/cover`,
-        }}
-      ></div>
+      <ThemeBackground />
       <div className="flex flex-col py-[5%] px-[10%] gap-(--gap)">
         {/* <h1 className="heading">PM Auto Log Work</h1> */}
 
