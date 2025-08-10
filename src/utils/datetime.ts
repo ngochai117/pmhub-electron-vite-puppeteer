@@ -1,5 +1,6 @@
 import moment from "moment";
 import { Project, WorkLog } from "../types/user";
+import { getNumber } from "./data";
 
 /**
  * @param input "Jul 23 - Aug 22, 2025"
@@ -62,7 +63,7 @@ export function generateLogWorkByRange(
   // Chuẩn bị map số giờ còn lại cho từng project
   const projectQueue = projects.map((p) => ({
     ...p,
-    remaining: Math.round((p.rate / 100) * totalHours),
+    remaining: Math.round((getNumber(p.rate) / 100) * totalHours),
   }));
 
   // Phân bổ theo từng ngày
@@ -76,7 +77,7 @@ export function generateLogWorkByRange(
 
       logs.push({
         date,
-        projectId: project.id,
+        projectId: String(project.id),
         hours: useHours,
       });
 

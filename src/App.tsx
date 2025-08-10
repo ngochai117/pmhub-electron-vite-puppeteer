@@ -37,7 +37,7 @@ const AppFC: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handle = (event: any, params: any) => {
+    const handle = (_: any, params: any) => {
       setInfoModalOptions(params ? { cta: {}, ...params } : undefined);
     };
     window.ipcRenderer.on(ELECTRON_EVENTS.SHOW_MODAL, handle);
