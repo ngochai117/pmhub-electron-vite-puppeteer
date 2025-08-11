@@ -269,8 +269,9 @@ export default class Dashboard {
 
     let hasDeleted = false;
     let iteration = 0;
+    let hasMoreRows = true;
 
-    while (true) {
+    while (hasMoreRows) {
       iteration++;
 
       let found = false;
@@ -307,7 +308,9 @@ export default class Dashboard {
         console.log(error);
       }
 
-      if (!found) break; // không còn gì để xóa
+      if (!found) {
+        hasMoreRows = false; // không còn gì để xóa
+      }
     }
 
     if (hasDeleted) {

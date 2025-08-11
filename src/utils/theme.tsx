@@ -1,6 +1,8 @@
 import { MediaHTMLAttributes, useEffect, useState } from "react";
 import { ELECTRON_EVENTS } from "../constants";
 import { motion } from "framer-motion";
+import darkVideo from "../assets/video-corgi-dark.mp4";
+import lightVideo from "../assets/video-cat-light.mp4";
 
 export const Theme = {
   system: "system",
@@ -97,7 +99,7 @@ export function ThemeBackground() {
         exit={theme === Theme.dark ? variants.hidden : variants.visible}
         transition={{ duration }}
       >
-        <video {...videoBase} src="/video-corgi-dark.mp4"></video>
+        <video {...videoBase} src={darkVideo}></video>
       </motion.div>
       <motion.div
         initial={theme === Theme.light ? variants.visible : variants.hidden}
@@ -105,7 +107,7 @@ export function ThemeBackground() {
         exit={theme === Theme.light ? variants.hidden : variants.visible}
         transition={{ duration }}
       >
-        <video {...videoBase} src="/video-cat-light.mp4"></video>
+        <video {...videoBase} src={lightVideo}></video>
       </motion.div>
     </>
   );
