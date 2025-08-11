@@ -118,7 +118,6 @@
     width: 100%;
     position: absolute;
     inset: 0;
-    translate: 0 calc(200% + 1rem);
     scale: 0.8;
     opacity: 0;
     transition-property: translate, opacity, scale;
