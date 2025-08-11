@@ -12,7 +12,7 @@
   mac: {
     target: ["dmg"],
     artifactName: "${productName}-Mac-${version}-Installer.${ext}",
-    icon: "resources/momo/icon.icns",
+    icon: "resources/icon.icns",
   },
   win: {
     target: [
@@ -22,7 +22,7 @@
       },
     ],
     artifactName: "${productName}-Windows-${version}-Setup.${ext}",
-    icon: "resources/momo/icon.ico",
+    icon: "resources/icon.ico",
   },
   nsis: {
     oneClick: false,
@@ -33,6 +33,6 @@
   linux: {
     target: ["AppImage"],
     artifactName: "${productName}-Linux-${version}.${ext}",
-    icon: "resources/momo/icon.png",
+    icon: "resources/icon.png",
   },
 }
