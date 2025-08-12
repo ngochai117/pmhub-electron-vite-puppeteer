@@ -88,7 +88,7 @@ registerEvents();
 
 async function showPopup(params: InfoModalOptions) {
   let needCreateWindow = false;
-  if (app.isHidden()) app.show();
+  app.dock?.show();
   if (!win) {
     needCreateWindow = true;
     await app.whenReady().then(createWindow);
