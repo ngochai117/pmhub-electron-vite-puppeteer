@@ -12,11 +12,11 @@ export function registerEvents() {
   // action login
   ipcMain.on(
     ELECTRON_EVENTS.LOGIN,
-    async (_event, { username, password, projects, runNow }) => {
+    async (_event, { username, password, projects, action }) => {
       const data = { username, password, projects };
       writeFile(FILE_NAMES.USER_DATA, encryptJson(data));
 
-      if (runNow) runTool(data);
+      if (action) runTool(data, action);
     }
   );
 

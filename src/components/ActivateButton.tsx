@@ -7,6 +7,7 @@ import Modal from "./Modal";
 import { ELECTRON_EVENTS } from "../constants";
 import InfoModal from "./InfoModal";
 import { InfoModalOptions } from "../types/modal";
+import { translate } from "../utils/localize";
 
 interface Props {
   license?: LicenseResponseFE;
@@ -33,7 +34,7 @@ const MODAL_TEXT: Record<
   },
 };
 
-const MODAL_TEXT_2 = {
+const TEXT = {
   LOADING: (
     <>
       <div className="loading-spinner"></div>Đang kích hoạt
@@ -42,6 +43,9 @@ const MODAL_TEXT_2 = {
   ACTIVATE: "Kích hoạt",
   TRY: "Trải nghiệm ngay",
   PLACE_HOLDER_INPUT: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
+  ACTIVATE_SUCCESS: "Kích hoạt thành công!",
+  TRIAL: "Trial",
+  ACTIVE_KEY: "Active Key",
 };
 
 interface ActivateModal {
@@ -56,7 +60,7 @@ interface ActivateModal {
 function isValidKey(key?: string) {
   return (
     key &&
-    key.length === MODAL_TEXT_2.PLACE_HOLDER_INPUT.length &&
+    key.length === TEXT.PLACE_HOLDER_INPUT.length &&
     key.split("-").length === 5
   );
 }
@@ -87,14 +91,14 @@ const ActivateButton: React.FC<Props> = (props) => {
             setSuccessModal({
               type: "success",
               title: licenseModal.title,
-              desc: "Kích hoạt thành công!",
+              desc: TEXT.ACTIVATE_SUCCESS,
               cta: {},
             });
             onActivateSuccess?.();
           } else {
             setLicenseModal((prev) => ({
               ...prev,
-              error: result?.msg || "Lỗi không xác định",
+              error: result?.msg || translate("excuse_error_desc"),
               loading: false,
             }));
           }
@@ -155,13 +159,13 @@ const ActivateButton: React.FC<Props> = (props) => {
             onClick={() => handleMenuClick("TRIAL")}
             className={`${classNameButtonMenu}`}
           >
-            Trial
+            {TEXT.TRIAL}
           </div>
           <div
             onClick={() => handleMenuClick("LICENSE")}
             className={`${classNameButtonMenu} font-semibold`}
           >
-            Active Key
+            {TEXT.ACTIVE_KEY}
             {renderPing()}
           </div>
         </Modal>
@@ -187,7 +191,7 @@ const ActivateButton: React.FC<Props> = (props) => {
           <input
             type="text"
             className="w-full p-2 border rounded mt-4"
-            placeholder={MODAL_TEXT_2.PLACE_HOLDER_INPUT}
+            placeholder={TEXT.PLACE_HOLDER_INPUT}
             value={licenseModal?.key}
             onChange={(e) => {
               const value = e.target.value
@@ -214,10 +218,10 @@ const ActivateButton: React.FC<Props> = (props) => {
             onClick={activate}
           >
             {licenseModal?.loading
-              ? MODAL_TEXT_2.LOADING
+              ? TEXT.LOADING
               : licenseModal?.type === "TRIAL"
-              ? MODAL_TEXT_2.TRY
-              : MODAL_TEXT_2.ACTIVATE}
+              ? TEXT.TRY
+              : TEXT.ACTIVATE}
           </button>
         </div>
       </Modal>

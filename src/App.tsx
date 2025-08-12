@@ -15,6 +15,7 @@ import { getNumber } from "./utils/data";
 import { ThemeBackground } from "./utils/theme";
 import InfoModal from "./components/InfoModal";
 import { InfoModalOptions } from "./types/modal";
+import { translate } from "./utils/localize";
 
 gsap.registerPlugin(Draggable);
 
@@ -55,17 +56,31 @@ const AppFC: React.FC = () => {
   };
 
   const save = () => {
-    // Placeholder: To be implemented
-    console.log("Save clicked");
     window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, userData);
   };
 
-  const runNow = () => {
-    // Placeholder: To be implemented
-    console.log("Run Now clicked");
+  const logTime = () => {
     window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, {
       ...userData,
-      runNow: true,
+      action: "logTime",
+    });
+  };
+
+  const deleteLog = () => {
+    setInfoModalOptions({
+      title: translate("delete_all_log"),
+      desc: translate("delete_all_confirm_desc"),
+      type: "warning",
+      cta: {
+        title: "Xoá",
+        onClick: () => {
+          setInfoModalOptions(undefined);
+          window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, {
+            ...userData,
+            action: "deleteLog",
+          });
+        },
+      },
     });
   };
 
@@ -75,7 +90,8 @@ const AppFC: React.FC = () => {
     projectsValid &&
     projectsValid?.length > 0
   );
-  const validRun = validSave && valid;
+  const validRun = valid && validSave;
+  const validDeleteLog = valid && !!(userData?.username && userData?.password);
 
   return (
     <>
@@ -92,7 +108,6 @@ const AppFC: React.FC = () => {
             <i className="fa-solid fa-user icon-left"></i>
             <input
               className="has-icon-left"
-              id="username"
               placeholder="Username"
               value={userData?.username || ""}
               onChange={(e) =>
@@ -105,7 +120,6 @@ const AppFC: React.FC = () => {
             <i className="fa-solid fa-lock icon-left"></i>
             <input
               className="has-icon-left"
-              id="password"
               placeholder="Password"
               type="password"
               value={userData?.password || ""}
@@ -123,25 +137,32 @@ const AppFC: React.FC = () => {
 
         <div className="flex gap-4">
           <LiquidGlass className={`clickable ${validSave ? "" : "disabled"}`}>
-            <button
-              id="saveBtn"
-              onClick={save}
-              className="wrap-icon"
-              disabled={!validSave}
-            >
+            <button onClick={save} className="wrap-icon" disabled={!validSave}>
               <i className="fa-solid fa-floppy-disk icon-left wiggle-hover"></i>
-              Lưu
+              {translate("save")}
             </button>
           </LiquidGlass>
           <LiquidGlass className={`clickable ${validRun ? "" : "disabled"}`}>
             <button
-              id="runBtn"
-              onClick={runNow}
+              onClick={logTime}
               className="wrap-icon"
               disabled={!validRun}
             >
               <i className="fa-solid fa-rocket icon-left icon-wiggle wiggle-hover"></i>
-              Lưu & Chạy ngay
+              {translate("save_and_log")}
+            </button>
+          </LiquidGlass>
+          <LiquidGlass
+            className={`clickable ${validRun ? "" : "disabled"}`}
+            style={{ "--bg-color": "#ff0000", "--bg-opacity": 0.5 } as any}
+          >
+            <button
+              onClick={deleteLog}
+              className="wrap-icon"
+              disabled={!validDeleteLog}
+            >
+              <i className="fa-solid fa-trash icon-left icon-wiggle wiggle-hover"></i>
+              {translate("delete_all_log")}
             </button>
           </LiquidGlass>
         </div>

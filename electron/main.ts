@@ -6,11 +6,17 @@ import { registerEvents } from "../src/handlers/events";
 import { ELECTRON_EVENTS } from "../src/constants";
 import { getArgValue } from "../src/utils/file";
 import { logJson } from "../src/utils/logger";
-import { checkUserDataValid, getUserData } from "../src/utils/user";
+import {
+  checkLicenseValid,
+  checkUserDataValid,
+  getUserData,
+} from "../src/utils/user";
 import { InfoModalOptions } from "../src/types/modal";
 import { getLicenseInfoViaServer } from "../src/api/license";
 import { UserData } from "../src/types/user";
 import { runPMHub } from "../src/puppeteer/puppeteer";
+import { translate } from "../src/utils/localize";
+import { Action } from "../src/types/browser";
 
 // const require = createRequire(import.meta.url)
 
@@ -96,21 +102,25 @@ async function showPopup(params: InfoModalOptions) {
   }
 }
 
-export async function runTool(userData?: UserData, action?: string) {
+export async function runTool(
+  userData?: UserData,
+  action?: Action,
+  silent?: boolean
+) {
   if (!checkUserDataValid(userData)) {
     showPopup({
       type: "error",
-      title: "Thông tin không chính xác",
-      desc: "Vui lòng nhập đầy đủ thông tin user và tối thiểu một project",
+      title: translate("invalid_user"),
+      desc: translate("invalid_user_desc"),
     });
     return;
   }
   const license = await getLicenseInfoViaServer();
-  if (!license) {
+  if (!checkLicenseValid(license)) {
     showPopup({
       type: "error",
-      title: "License",
-      desc: "Vui lòng kích hoạt để sử dụng tính năng",
+      title: translate("invalid_license"),
+      desc: translate("invalid_license_desc"),
     });
     return;
   }
@@ -118,19 +128,25 @@ export async function runTool(userData?: UserData, action?: string) {
   const result = await runPMHub(userData as Required<UserData>, action);
 
   if (result?.success) {
-    // app.quit();
+    if (silent) app.quit();
+    else if (result?.title || result?.msg)
+      showPopup({
+        type: "success",
+        title: result?.title,
+        desc: result?.msg,
+      });
   } else {
     showPopup({
-      title: "Lỗi thực thi",
+      title: result?.title || translate("excuse_error"),
       type: "error",
-      desc: result?.msg || "Lỗi không xác định",
+      desc: result?.msg || translate("excuse_error_desc"),
     });
   }
 }
 
 async function runMain() {
   const silent = process.argv.includes("--silent");
-  const action = getArgValue("--action");
+  const action = getArgValue("--action") as any;
 
   if (silent) {
     logJson({ action: "run background" });
@@ -138,7 +154,7 @@ async function runMain() {
 
     const userData = await getUserData();
 
-    await runTool(userData, action);
+    await runTool(userData, action, silent);
   } else {
     logJson({ action: "run force ground" });
     app.whenReady().then(createWindow);

@@ -18,15 +18,23 @@
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: -1;
     overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
     transition: all 0.3s ease-out;
 
     background: light-dark(
-      hsl(0 0% 100% / var(--bg-opacity, 0)),
-      hsl(0 0% 0% / var(--bg-opacity, 0))
+      color-mix(
+        in hsl,
+        var(--bg-color, #fff) calc(var(--bg-opacity, 0) * 100%),
+        transparent
+      ),
+      color-mix(
+        in hsl,
+        var(--bg-color, #000) calc(var(--bg-opacity, 0) * 100%),
+        transparent
+      )
     );
 
     /* box-shadow: 0 0 2px 1px
@@ -92,7 +100,7 @@
   &::after {
     content: "";
     position: absolute;
-    z-index: -1;
+    z-index: -2;
     inset: 0;
     border-radius: inherit;
     -webkit-backdrop-filter: blur(calc(var(--bd-blur, 0) * 1px));

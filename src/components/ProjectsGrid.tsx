@@ -3,11 +3,14 @@ import LiquidGlass from "./liquid-glass/LiquidGlass";
 import { Project } from "../types/user";
 import { motion, AnimatePresence } from "motion/react";
 import { getNumber } from "../utils/data";
+import { translate } from "../utils/localize";
 
 interface Props {
   projects?: Project[];
   updateProjects: (projects: Project[]) => void;
 }
+
+const getUniqueId = () => Date.now().toString();
 
 const ProjectsGrid: React.FC<Props> = (props) => {
   const { projects: projectsProp, updateProjects } = props || {};
@@ -15,11 +18,11 @@ const ProjectsGrid: React.FC<Props> = (props) => {
   const projects = useMemo(() => {
     return projectsProp && projectsProp?.length > 0
       ? projectsProp
-      : [{ uniqueId: Date.now().toString() }];
+      : [{ uniqueId: getUniqueId() }];
   }, [projectsProp]);
 
   const addProjectRow = () => {
-    updateProjects([...(projects || []), { uniqueId: Date.now().toString() }]);
+    updateProjects([...(projects || []), { uniqueId: getUniqueId() }]);
   };
 
   const removeProjectRow = (index: number) => {
@@ -102,7 +105,7 @@ const ProjectsGrid: React.FC<Props> = (props) => {
           onClick={addProjectRow}
         >
           <i className="fa-solid fa-plus icon-left spin-hover"></i>
-          Thêm project
+          {translate("add_project")}
         </button>
       </LiquidGlass>
     </div>

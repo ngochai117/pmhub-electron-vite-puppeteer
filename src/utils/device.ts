@@ -12,8 +12,8 @@ export async function getDeviceId(): Promise<string> {
   const base = machineIdSync() + mac + cpuHash;
   const deviceId = createHash("sha256").update(base).digest("hex");
   logJson({ fn: "getDeviceId", deviceId });
-  // return deviceId;
-  return "device-id-test-7";
+  return deviceId;
+  // return "device-id-test-7";
 }
 
 export function isLikelyVirtualMachine(): boolean {

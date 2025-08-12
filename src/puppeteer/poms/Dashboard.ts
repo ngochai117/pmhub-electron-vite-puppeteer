@@ -5,6 +5,7 @@ import { generateLogWorkByRange, parseDateRange } from "../../utils/datetime";
 import { Project, WorkLog } from "../../types/user";
 import { BrowserResultCommon } from "../../types/browser";
 import { logJson } from "../../utils/logger";
+import { translate } from "../../utils/localize";
 
 export default class Dashboard {
   page: Page;
@@ -120,15 +121,21 @@ export default class Dashboard {
     await this.clickButtonAdd();
     await this.waitSelector(".mud-list .mud-list-item");
 
+    let foundProjectId = false;
     const items = await this.page.$$(".mud-list .mud-list-item");
     for (const item of items) {
       const text = await item.evaluate((el) => el.textContent);
       if (text?.includes(log.projectId)) {
         await item.click();
         await this.waitSelector(".mud-list .mud-list-item", false);
+        foundProjectId = true;
         break;
       }
     }
+    if (!foundProjectId)
+      throw new Error(
+        translate("not_found_project").replace("{{id}}", log.projectId)
+      );
 
     await this.waitSelector("tbody.mud-table-body > tr");
     const rows = await this.page.$$("tbody.mud-table-body > tr");
@@ -202,9 +209,7 @@ export default class Dashboard {
     await delay(2000);
 
     const rangeTime = await this.getRangeTime();
-    if (!rangeTime) {
-      return { success: false, msg: "Không có rangeTime" };
-    }
+    if (!rangeTime) throw new Error(translate("not_found_range_time"));
 
     const expectedLogs = generateLogWorkByRange(rangeTime, projects);
     console.log(
@@ -223,6 +228,7 @@ export default class Dashboard {
     );
     console.log("📌 Cần thêm:", missingLogs1);
     await this.logMissingLogs(missingLogs1);
+
     console.log("----Done lần đầu----");
 
     // Giai đoạn 2: đọc lại sau khi log, kiểm tra còn thiếu
@@ -244,14 +250,16 @@ export default class Dashboard {
       actualMapFinal
     );
 
+    const success = missingLogsFinal.length === 0;
+
     return {
-      success: missingLogsFinal.length === 0,
-      msg:
-        missingLogsFinal.length === 0
-          ? ""
-          : `📌 Còn thiếu: ${missingLogsFinal
-              ?.map((l) => `${l.projectId} - ${l.date} - ${l.hours}h`)
-              .join(", ")}`,
+      success,
+      title: translate(success ? "log_success" : "log_error"),
+      msg: success
+        ? translate("log_success_desc")
+        : `Còn thiếu: ${missingLogsFinal
+            ?.map((l) => `${l.projectId} - ${l.date} - ${l.hours}h`)
+            .join(", ")}`,
     };
   }
 
@@ -263,9 +271,8 @@ export default class Dashboard {
 
     await this.waitSelector("tbody.mud-table-body > tr");
     const rows = await this.page.$$("tbody.mud-table-body > tr");
-    if (!rows || rows.length === 0) {
-      return { success: false, msg: "ℹ️ Không có log work nào để xoá." };
-    }
+    if (!rows || rows.length === 0)
+      throw new Error(translate("delete_log_error_not_found_log"));
 
     let hasDeleted = false;
     let iteration = 0;
@@ -321,9 +328,12 @@ export default class Dashboard {
 
     return {
       success: hasDeleted,
-      msg: hasDeleted
-        ? "✅ Đã xoá toàn bộ log work."
-        : "ℹ️ Không có log work nào để xoá.",
+      title: translate(hasDeleted ? "delete_log_success" : "delete_log_error"),
+      msg: translate(
+        hasDeleted
+          ? "delete_log_success_desc"
+          : "delete_log_error_not_found_log"
+      ),
     };
   }
 }

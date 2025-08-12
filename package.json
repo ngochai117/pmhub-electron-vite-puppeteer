@@ -9,7 +9,7 @@
     "build:all": "tsc && vite build && electron-builder -mwl",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "dev-silent": "electron ./dist-electron/main.js --silent"
+    "dev-p": "electron ./dist-electron/main.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",

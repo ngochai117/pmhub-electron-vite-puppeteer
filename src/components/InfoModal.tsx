@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { InfoModalOptions } from "../types/modal";
 import Modal, { ModalProps } from "./Modal";
+import { translate } from "../utils/localize";
 
 interface Props extends Omit<ModalProps, "children"> {
   options?: InfoModalOptions;
@@ -36,10 +37,10 @@ const InfoModal: React.FC<Props> = (props) => {
       {!!cta && (
         <div className="mt-6 flex justify-end">
           <button
-            className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
+            className="px-4 py-2 rounded disabled:opacity-50"
             onClick={cta?.onClick || props.requestClose}
           >
-            {cta?.title || "Đóng"}
+            {cta?.title || translate("close")}
           </button>
         </div>
       )}

@@ -1,11 +1,12 @@
 import puppeteer from "puppeteer";
 import Login from "./poms/Login";
 import { UserData } from "../types/user";
-import { BrowserResultCommon } from "../types/browser";
+import { Action, BrowserResultCommon } from "../types/browser";
 import { getConfigPath } from "../utils/file";
 import { FILE_NAMES } from "../constants";
 import { delay } from "../utils/puppeteer-helper";
 import Dashboard from "./poms/Dashboard";
+import { translate } from "../utils/localize";
 
 const runBrowser = async () => {
   const browser = await puppeteer.launch({
@@ -20,7 +21,7 @@ const runBrowser = async () => {
 
 export const runPMHub = async (
   params: Required<UserData>,
-  action = "logTime"
+  action: Action = "logTime"
 ): Promise<BrowserResultCommon> => {
   const { username, password, projects } = params || {};
 
@@ -37,7 +38,8 @@ export const runPMHub = async (
       browser.close();
       return {
         success: false,
-        msg: "Đăng nhập thất bại",
+        title: translate("login_fail"),
+        msg: translate("login_fail_desc"),
       };
     }
 
@@ -46,16 +48,32 @@ export const runPMHub = async (
     const dashboard = new Dashboard(page);
     const result =
       action === "deleteLog"
-        ? await dashboard.deleteAllLogTime()
-        : await dashboard.logTime(projects);
+        ? await dashboard.deleteAllLogTime().catch((e) => {
+            browser.close();
+            return {
+              success: false,
+              title: translate("delete_log_error"),
+              msg: e?.message,
+            };
+          })
+        : await dashboard.logTime(projects).catch((e) => {
+            browser.close();
+            return {
+              success: false,
+              title: translate("log_error"),
+              msg: e?.message,
+            };
+          });
 
     browser.close();
     return result;
   } catch (error: any) {
+    console.log(`Log work error:`, error);
     browser.close();
     return {
       success: false,
-      msg: error,
+      title: translate("excuse_error"),
+      msg: error?.message || translate("excuse_error_desc"),
     };
   }
 };
