@@ -142,7 +142,7 @@ const ActivateButton: React.FC<Props> = (props) => {
                 }
               }}
             >
-              <i className="fa-solid fa-key"></i>
+              <i className="fa-solid fa-key fa-bounce"></i>
             </button>
             {openMenu || licenseModal ? null : renderPing("top-0 right-0")}
           </LiquidGlass>

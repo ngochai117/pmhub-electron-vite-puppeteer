@@ -9,9 +9,21 @@ const LICENSE_LABELS = {
       <i className="fa-solid fa-lock mr-2"></i>Bạn cần kích hoạt để sử dụng
     </>
   ),
-  [LicenseType.TRIAL]: "Bản dùng thử",
-  [LicenseType.ULTIMATE]: `Thành viên Siêu Cấp Vip Pro`,
-  [LicenseType.LIMIT]: "Bản giới hạn",
+  [LicenseType.TRIAL]: (
+    <>
+      <i className="fa-solid fa-unlock mr-2"></i>Bản dùng thử
+    </>
+  ),
+  [LicenseType.ULTIMATE]: (
+    <>
+      <i className="fa-solid fa-crown mr-2"></i>Thành viên Siêu Cấp Vip Pro
+    </>
+  ),
+  [LicenseType.LIMIT]: (
+    <>
+      <i className="fa-solid fa-unlock mr-2"></i>Bản giới hạn
+    </>
+  ),
   LOADING: (
     <>
       <div className="loading-spinner"></div>Đang cập nhật license...
@@ -25,7 +37,8 @@ interface Props {
 }
 
 const LicenseStatus: React.FC<Props> = (props) => {
-  const { license, onActivateSuccess } = props || {};
+  const { licensesdsd, onActivateSuccess } = props || {};
+  const license = { type: LicenseType.ULTIMATE };
   const { type, expiredAt, remainingTime, isExpired } = license || {};
 
   const days = Math.floor((remainingTime || 0) / (1000 * 60 * 60 * 24));
@@ -45,8 +58,14 @@ const LicenseStatus: React.FC<Props> = (props) => {
           className="flex flex-row items-center text-center px-3 py-2 font-bold"
           style={{ "--bd-blur": 8 } as any}
         >
-          {label}
-          {timeText}
+          <span
+            className={
+              type === LicenseType.ULTIMATE ? "license-label-ultimate" : ""
+            }
+          >
+            {label}
+            {timeText}
+          </span>
         </LiquidGlass>
 
         <ActivateButton

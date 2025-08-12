@@ -135,26 +135,32 @@ const AppFC: React.FC = () => {
           updateProjects={updateProjects}
         />
 
-        <div className="flex gap-4">
-          <LiquidGlass className={`clickable ${validSave ? "" : "disabled"}`}>
-            <button onClick={save} className="wrap-icon" disabled={!validSave}>
-              <i className="fa-solid fa-floppy-disk icon-left wiggle-hover"></i>
-              {translate("save")}
-            </button>
-          </LiquidGlass>
-          <LiquidGlass className={`clickable ${validRun ? "" : "disabled"}`}>
-            <button
-              onClick={logTime}
-              className="wrap-icon"
-              disabled={!validRun}
-            >
-              <i className="fa-solid fa-rocket icon-left icon-wiggle wiggle-hover"></i>
-              {translate("save_and_log")}
-            </button>
-          </LiquidGlass>
+        <div className="flex justify-between gap-4">
+          <div className="flex gap-4">
+            <LiquidGlass className={`clickable ${validSave ? "" : "disabled"}`}>
+              <button
+                onClick={save}
+                className="wrap-icon"
+                disabled={!validSave}
+              >
+                <i className="fa-solid fa-floppy-disk icon-left wiggle-hover"></i>
+                {translate("save")}
+              </button>
+            </LiquidGlass>
+            <LiquidGlass className={`clickable ${validRun ? "" : "disabled"}`}>
+              <button
+                onClick={logTime}
+                className="wrap-icon"
+                disabled={!validRun}
+              >
+                <i className="fa-solid fa-rocket icon-left icon-wiggle wiggle-hover"></i>
+                {translate("save_and_log")}
+              </button>
+            </LiquidGlass>
+          </div>
           <LiquidGlass
             className={`clickable ${validRun ? "" : "disabled"}`}
-            style={{ "--bg-color": "#ff0000", "--bg-opacity": 0.5 } as any}
+            style={{ "--bg-color": "#ff0000", "--bg-opacity": 0.6 } as any}
           >
             <button
               onClick={deleteLog}
