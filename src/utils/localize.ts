@@ -37,6 +37,7 @@ const LOCALIZE = {
   setting_calendar_remove: "Xoá lịch",
 };
 
+type JSONObject = { [key: string]: any };
 export const replaceAll = (
   target: string | undefined,
   oldStr: string,
@@ -49,7 +50,7 @@ export const replaceAll = (
   return target?.replace(regex, newStr) || newStr;
 };
 
-const replaceMulti = (target: string | undefined, param: ObjectString) => {
+const replaceMulti = (target: string | undefined, param: JSONObject) => {
   if (typeof target !== "string") {
     return "";
   }
@@ -63,10 +64,7 @@ const replaceMulti = (target: string | undefined, param: ObjectString) => {
   return out;
 };
 
-export const translate = (
-  key: keyof typeof LOCALIZE,
-  params?: { [key: string]: any }
-) => {
+export const translate = (key: keyof typeof LOCALIZE, params?: JSONObject) => {
   if (!key) return "";
   if (typeof key === "string") {
     const text = LOCALIZE[key];

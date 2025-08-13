@@ -1,7 +1,7 @@
 import { MediaHTMLAttributes, useEffect, useState } from "react";
 import { ELECTRON_EVENTS } from "../constants";
 import darkVideo from "../assets/video-corgi-dark.mp4";
-import lightVideo from "../assets/video-corgi-light-2.mp4";
+// import lightVideo from "../assets/video-corgi-light-2.mp4";
 
 export const Theme = {
   system: "system",
