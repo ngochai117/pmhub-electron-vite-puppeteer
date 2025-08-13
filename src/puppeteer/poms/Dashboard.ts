@@ -133,9 +133,7 @@ export default class Dashboard {
       }
     }
     if (!foundProjectId)
-      throw new Error(
-        translate("not_found_project").replace("{{id}}", log.projectId)
-      );
+      throw new Error(translate("not_found_project", { id: log.projectId }));
 
     await this.waitSelector("tbody.mud-table-body > tr");
     const rows = await this.page.$$("tbody.mud-table-body > tr");

@@ -13,6 +13,16 @@
     target: ["dmg"],
     artifactName: "${productName}-Mac-${version}-Installer.${ext}",
     icon: "resources/icon.icns",
+
+    // scheduler
+    hardenedRuntime: true,
+    entitlements: "resources/entitlements.mac.plist",
+    entitlementsInherit: "resources/entitlements.mac.plist",
+
+    // ✅ mô tả quyền hiện trong prompt Apple Events
+    extendInfo: {
+      NSAppleEventsUsageDescription: "PM Hub cần tự động mở/điều khiển ứng dụng để log work theo lịch.",
+    },
   },
   win: {
     target: [

@@ -7,6 +7,7 @@ import { getUserData } from "../utils/user";
 import { logJson } from "../utils/logger";
 import { activateLicense, getLicenseInfoViaServer } from "../api/license";
 import { runTool } from "../../electron/main";
+import { registerSchedulerEvents } from "./scheduler_events";
 
 export function registerEvents() {
   // action login
@@ -49,4 +50,6 @@ export function registerEvents() {
   ipcMain.on(ELECTRON_EVENTS.SWITCH_THEME, async (_event, theme) => {
     nativeTheme.themeSource = theme;
   });
+
+  registerSchedulerEvents();
 }

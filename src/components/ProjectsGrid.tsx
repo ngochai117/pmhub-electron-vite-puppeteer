@@ -4,6 +4,7 @@ import { Project } from "../types/user";
 import { motion, AnimatePresence } from "motion/react";
 import { getNumber } from "../utils/data";
 import { translate } from "../utils/localize";
+import Scheduler from "./Scheduler";
 
 interface Props {
   projects?: Project[];
@@ -98,16 +99,19 @@ const ProjectsGrid: React.FC<Props> = (props) => {
   return (
     <div className="flex flex-col gap-(--gap)">
       {renderProjects()}
-      <LiquidGlass className="clickable">
-        <button
-          type="button"
-          className="flex wrap-icon"
-          onClick={addProjectRow}
-        >
-          <i className="fa-solid fa-plus icon-left spin-hover"></i>
-          {translate("add_project")}
-        </button>
-      </LiquidGlass>
+      <div className="flex justify-between gap-4">
+        <LiquidGlass className="clickable">
+          <button
+            type="button"
+            className="flex wrap-icon"
+            onClick={addProjectRow}
+          >
+            <i className="fa-solid fa-plus icon-left spin-hover"></i>
+            {translate("add_project")}
+          </button>
+        </LiquidGlass>
+        <Scheduler />
+      </div>
     </div>
   );
 };

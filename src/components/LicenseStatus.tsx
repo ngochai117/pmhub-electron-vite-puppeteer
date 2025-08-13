@@ -37,8 +37,7 @@ interface Props {
 }
 
 const LicenseStatus: React.FC<Props> = (props) => {
-  const { licensesdsd, onActivateSuccess } = props || {};
-  const license = { type: LicenseType.ULTIMATE };
+  const { license, onActivateSuccess } = props || {};
   const { type, expiredAt, remainingTime, isExpired } = license || {};
 
   const days = Math.floor((remainingTime || 0) / (1000 * 60 * 60 * 24));

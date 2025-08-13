@@ -36,7 +36,8 @@ input {
   }
 }
 
-button {
+button,
+select {
   cursor: pointer;
   padding: 0.5rem 1rem;
   border-radius: 24px;

@@ -212,11 +212,7 @@ const ActivateButton: React.FC<Props> = (props) => {
         )}
 
         <div className="mt-6 flex justify-end">
-          <button
-            className="px-4 py-2 rounded bg-black text-white disabled:opacity-50"
-            disabled={activateButtonDisabled}
-            onClick={activate}
-          >
+          <button disabled={activateButtonDisabled} onClick={activate}>
             {licenseModal?.loading
               ? TEXT.LOADING
               : licenseModal?.type === "TRIAL"
