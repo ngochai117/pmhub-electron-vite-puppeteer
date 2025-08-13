@@ -70,20 +70,13 @@ const variants = {
 export function ThemeBackground() {
   const theme = useSystemTheme();
 
-  // const backgroundImage =
-  //   theme === Theme.dark
-  //     ? "https://i.pinimg.com/1200x/b8/1d/48/b81d48a7f323e4c85775f41114cb3b65.jpg"
-  //     : "https://i.pinimg.com/1200x/8f/b1/38/8fb138947d35d4bf2493904484a4a77f.jpg";
+  const backgroundImage =
+    theme === Theme.dark
+      ? "https://i.pinimg.com/1200x/b8/1d/48/b81d48a7f323e4c85775f41114cb3b65.jpg"
+      : "https://i.pinimg.com/1200x/8f/b1/38/8fb138947d35d4bf2493904484a4a77f.jpg";
 
   return (
     <>
-      {/* <div
-        className="z-[-999] fixed inset-0 pointer-events-none"
-        style={{
-          transition: "background 0.5s ease",
-          background: `url('${backgroundImage}') center/cover`,
-        }}
-      ></div> */}
       {/* fall back background color */}
       <div
         className="fixed inset-0 pointer-events-none z-[-99999]"
@@ -92,6 +85,14 @@ export function ThemeBackground() {
           transition: `background-color ${duration / 1000}s ease`,
         }}
       />
+      <div
+        className="z-[-999] fixed inset-0 pointer-events-none"
+        style={{
+          transition: `background ${duration / 1000}s ease`,
+          background: `url('${backgroundImage}') center/cover`,
+        }}
+      ></div>
+
       {/* Dark theme video */}
       <motion.div
         initial={theme === Theme.dark ? variants.visible : variants.hidden}
@@ -101,14 +102,14 @@ export function ThemeBackground() {
       >
         <video {...videoBase} src={darkVideo}></video>
       </motion.div>
-      <motion.div
+      {/* <motion.div
         initial={theme === Theme.light ? variants.visible : variants.hidden}
         animate={theme === Theme.light ? variants.visible : variants.hidden}
         exit={theme === Theme.light ? variants.hidden : variants.visible}
         transition={{ duration }}
       >
         <video {...videoBase} src={lightVideo}></video>
-      </motion.div>
+      </motion.div> */}
     </>
   );
 }

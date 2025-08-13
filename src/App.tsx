@@ -2,7 +2,10 @@
 // import viteLogo from "/electron-vite.animate.svg";
 import gsap from "gsap";
 import "./App.css";
-import { withLiquidGlassConfig } from "./components/liquid-glass/context/LiquidGlassConfigProvider";
+import {
+  useLiquidGlassConfig,
+  withLiquidGlassConfig,
+} from "./components/liquid-glass/context/LiquidGlassConfigProvider";
 import LiquidGlass from "./components/liquid-glass/LiquidGlass";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Draggable } from "gsap/Draggable";
@@ -20,6 +23,7 @@ import { translate } from "./utils/localize";
 gsap.registerPlugin(Draggable);
 
 const AppFC: React.FC = () => {
+  const { bgOpacity } = useLiquidGlassConfig();
   const [infoModalOptions, setInfoModalOptions] = useState<InfoModalOptions>();
 
   const [license, setLicense] = useState<LicenseResponseFE>();
@@ -160,7 +164,12 @@ const AppFC: React.FC = () => {
           </div>
           <LiquidGlass
             className={`clickable ${validRun ? "" : "disabled"}`}
-            style={{ "--bg-color": "#ff0000", "--bg-opacity": 0.6 } as any}
+            style={
+              {
+                "--bg-color": "#ff0000",
+                "--bg-opacity": bgOpacity + 0.3,
+              } as any
+            }
           >
             <button
               onClick={deleteLog}
