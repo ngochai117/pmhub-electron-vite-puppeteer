@@ -2,8 +2,6 @@ import puppeteer from "puppeteer";
 import Login from "./poms/Login";
 import { UserData } from "../types/user";
 import { Action, BrowserResultCommon } from "../types/browser";
-import { getConfigPath } from "../utils/file";
-import { FILE_NAMES } from "../constants";
 import { delay } from "../utils/puppeteer-helper";
 import Dashboard from "./poms/Dashboard";
 import { translate } from "../utils/localize";
@@ -11,7 +9,7 @@ import { translate } from "../utils/localize";
 const runBrowser = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    userDataDir: getConfigPath(FILE_NAMES.CACHE_BROWSER),
+    // userDataDir: getConfigPath(FILE_NAMES.CACHE_BROWSER),
     // args: ['--window-size=1280,900'],
     args: ["--start-maximized"], // max cửa sổ
     defaultViewport: null, // rất quan trọng để không bị ghi đè kích thước

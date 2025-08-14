@@ -5,7 +5,7 @@ export const DOMAIN_API =
 
 export const FILE_NAMES = {
   USER_DATA: "file-u.txt",
-  CACHE_BROWSER: "cache-browser",
+  // CACHE_BROWSER: "cache-browser",
 };
 
 export const PATHS = {
