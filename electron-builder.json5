@@ -3,7 +3,7 @@
   $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   appId: "${name}",
   asar: true,
-  productName: "PM Hub Auto Log Work",
+  // productName: "${productName}", //remove ở đây để lấy trong package.json
   directories: {
     output: "release/${version}",
     buildResources: "resources",

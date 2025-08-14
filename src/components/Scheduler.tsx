@@ -2,42 +2,43 @@ import React, { memo, useCallback, useEffect, useState } from "react";
 import LiquidGlass from "./liquid-glass/LiquidGlass";
 import { ELECTRON_EVENTS } from "../constants";
 import { translate } from "../utils/localize";
-import { NextRunEstimate } from "../schedulers/scheduler.macos";
 import Modal from "./Modal";
 import moment from "moment";
 import { getNumber } from "../utils/data";
+import { ScheduleReply } from "../schedulers/types";
 
 const Scheduler: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [nextRun, setNextRun] = useState<NextRunEstimate>();
+  const [schedulerStatus, setSchedulerStatus] = useState<ScheduleReply>();
   const [day, setDay] = useState(0);
   const [time, setTime] = useState("");
 
-  const getNextRun = useCallback(() => {
-    window.ipcRenderer
-      .invoke(ELECTRON_EVENTS.SETTING_SCHEDULER_NEXT_RUN)
-      .then((res) => {
-        setNextRun(res);
-      });
-  }, []);
-
   useEffect(() => {
-    getNextRun();
-  }, [getNextRun]);
+    window.ipcRenderer.invoke(ELECTRON_EVENTS.SCHEDULER_STATUS).then((res) => {
+      setSchedulerStatus(res);
+      const nextRunAt = res?.nextRun?.nextRunAtISO;
+
+      if (nextRunAt) {
+        const nextRunAtMoment = moment(nextRunAt);
+        setDay(nextRunAtMoment?.get("date"));
+        setTime(nextRunAtMoment?.format("HH:mm"));
+      }
+    });
+  }, []);
 
   const settingCalendar = useCallback(() => {
     if (!day || !time) return;
     window.ipcRenderer
-      .invoke(ELECTRON_EVENTS.SETTING_SCHEDULER_MONTHLY, {
+      .invoke(ELECTRON_EVENTS.SCHEDULER_MONTHLY, {
         day,
         hour: time.split(":")[0],
         minute: time.split(":")[1],
       })
-      .then(() => getNextRun())
+      .then(setSchedulerStatus)
       .catch((err) => {
         console.log("HAI ::: removeCalendar err", err);
       });
-  }, [day, getNextRun, time]);
+  }, [day, time]);
 
   useEffect(() => {
     settingCalendar();
@@ -45,11 +46,11 @@ const Scheduler: React.FC = () => {
 
   const removeCalendar = () => {
     window.ipcRenderer
-      .invoke(ELECTRON_EVENTS.SETTING_SCHEDULER_REMOVE)
-      .then(() => {
+      .invoke(ELECTRON_EVENTS.SCHEDULER_REMOVE)
+      .then((res) => {
         setDay(0);
         setTime("");
-        getNextRun();
+        setSchedulerStatus(res);
       })
       .catch((err) => {
         console.log("HAI ::: settingCalendar err", err);
@@ -60,7 +61,8 @@ const Scheduler: React.FC = () => {
     setOpenModal(true);
   };
 
-  const nextRunAtMoment = nextRun?.nextRunAt ? moment(nextRun.nextRunAt) : null;
+  const nextRunAt = schedulerStatus?.nextRun?.nextRunAtISO;
+  const nextRunAtMoment = nextRunAt ? moment(nextRunAt) : null;
   const dateTime = nextRunAtMoment
     ? nextRunAtMoment.format("[lúc] HH:mm, [ngày] D")
     : "";
@@ -80,6 +82,7 @@ const Scheduler: React.FC = () => {
         bodyClass="top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] backdrop-blur-md!"
         zIndex={20}
         closeButton
+        outsideClose
       >
         <h2 className="text-lg font-semibold">
           {translate("setting_calendar")}
@@ -95,7 +98,6 @@ const Scheduler: React.FC = () => {
           <select
             name="day"
             value={day}
-            defaultValue={0}
             onChange={(e) => setDay(getNumber(e.target.value))}
           >
             <option value={0} disabled>
@@ -103,12 +105,15 @@ const Scheduler: React.FC = () => {
             </option>
 
             {new Array(31).fill({}).map((_, i) => (
-              <option value={i + 1}>{i + 1}</option>
+              <option value={i + 1} key={i + 1}>
+                {i + 1}
+              </option>
             ))}
           </select>
 
           <input
             type="time"
+            step="60"
             className="w-full p-2 border rounded"
             value={time}
             onChange={(e) => setTime(e.target.value)}

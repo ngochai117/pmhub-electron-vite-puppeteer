@@ -1,58 +1,44 @@
 // src/main/main.ts
 import { ipcMain } from "electron";
-import {
-  getNextRunEstimate,
-  installMonthly,
-  status,
-  uninstall,
-} from "../schedulers/scheduler.macos";
 import { ELECTRON_EVENTS } from "../constants";
-
-function isMac() {
-  return process.platform === "darwin";
-}
+import * as scheduler from "../schedulers";
 
 export function registerSchedulerEvents() {
   ipcMain.handle(
-    ELECTRON_EVENTS.SETTING_SCHEDULER_MONTHLY,
-    async (_e, { day, hour, minute }) => {
-      if (!isMac()) throw new Error("macOS only in this handler");
-      installMonthly({ day, hour, minute });
-      return status() === "loaded";
-    }
+    "schedule:daily",
+    (_e, { hour, minute, highest }) => (
+      scheduler.installDaily({ hour, minute, highest }), scheduler.buildReply()
+    )
   );
 
-  // ipcMain.handle("schedule:daily", async (_e, { hour, minute }) => {
-  //   if (!isMac()) throw new Error("macOS only in this handler");
-  //   installDaily({ hour, minute });
-  //   return { ok: true, status: status() };
-  // });
+  ipcMain.handle(
+    ELECTRON_EVENTS.SCHEDULER_MONTHLY,
+    (_e, { day, hour, minute, lastDay, highest }) => (
+      scheduler.installMonthly({ day, hour, minute, lastDay, highest }),
+      scheduler.buildReply()
+    )
+  );
 
-  // ipcMain.handle("schedule:once", async (_e, iso: string) => {
-  //   if (!isMac()) throw new Error("macOS only in this handler");
-  //   installOnce(new Date(iso));
-  //   return { ok: true, status: status() };
-  // });
+  ipcMain.handle(
+    "schedule:once",
+    (_e, iso: string) => (scheduler.installOnce(iso), scheduler.buildReply())
+  );
 
-  ipcMain.handle(ELECTRON_EVENTS.SETTING_SCHEDULER_REMOVE, async () => {
-    if (!isMac()) throw new Error("macOS only in this handler");
-    uninstall();
-    return true;
-  });
+  ipcMain.handle(
+    ELECTRON_EVENTS.SCHEDULER_REMOVE,
+    () => (scheduler.removeSchedule(), scheduler.buildReply())
+  );
 
-  // ipcMain.handle(ELECTRON_EVENTS.SETTING_SCHEDULER_TEST, async () => {
-  //   if (!isMac()) throw new Error("macOS only in this handler");
-  //   testRunNow();
-  //   return { ok: true };
-  // });
+  ipcMain.handle("schedule:kick", () => (scheduler.kick(), { ok: true }));
 
-  // ipcMain.handle("schedule:status", async () => {
-  //   if (!isMac()) throw new Error("macOS only in this handler");
-  //   return { ok: true, status: status() };
-  // });
+  ipcMain.handle(ELECTRON_EVENTS.SCHEDULER_STATUS, () =>
+    scheduler.buildReply()
+  );
 
-  ipcMain.handle(ELECTRON_EVENTS.SETTING_SCHEDULER_NEXT_RUN, async () => {
-    if (!isMac()) throw new Error("macOS only in this handler");
-    return getNextRunEstimate();
-  });
+  ipcMain.handle(
+    "schedule:nextRun",
+    () => scheduler.nextRun() // ✅ trả UnifiedNextRun
+  );
+
+  ipcMain.handle("schedule:print", () => ({ text: scheduler.printDetail() }));
 }

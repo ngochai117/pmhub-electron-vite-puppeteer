@@ -31,7 +31,10 @@ const AppFC: React.FC = () => {
   const { valid } = license || {};
 
   const projectsValid = useMemo(
-    () => userData?.projects?.filter((p) => p.id && getNumber(p.rate) > 0),
+    () =>
+      userData?.projects?.filter(
+        (p) => !!p.id?.trim?.() && !!getNumber(p.rate)
+      ),
     [userData?.projects]
   );
 
@@ -60,7 +63,10 @@ const AppFC: React.FC = () => {
   };
 
   const save = () => {
-    window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, userData);
+    window.ipcRenderer.send(ELECTRON_EVENTS.LOGIN, {
+      ...userData,
+      projects: projectsValid,
+    });
   };
 
   const logTime = () => {

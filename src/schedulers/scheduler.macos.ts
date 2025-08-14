@@ -10,28 +10,37 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { ScheduleKind } from "./types";
+import {
+  APP_BUNDLE_PATH,
+  APP_ID,
+  APP_NAME,
+  SCHED_LABEL as LABEL,
+} from "./constants";
 
-const LABEL = "com.pmhub.autolog";
-const UID = process.getuid?.() ?? 501; // fallback
-const GUI_DOMAIN = `gui/${UID}`;
-const LAUNCH_AGENTS_DIR = join(homedir(), "Library/LaunchAgents");
-const USER_DATA_DIR = app.getPath("userData"); // ~/Library/Application Support/<AppName>
-const SCRIPT_DIR = join(USER_DATA_DIR, "scripts");
-const SCRIPT_PATH = join(SCRIPT_DIR, "pmhub-autolog.sh");
-const PLIST_PATH = join(LAUNCH_AGENTS_DIR, `${LABEL}.plist`);
-
-const BASE_CMD = `osascript -e 'quit app "PM Hub Auto Log Work"' && open -n -a "PM Hub Auto Log Work" --args --silent`;
 const LOG_OUT = "/tmp/pmhub-autolog.out";
 const LOG_ERR = "/tmp/pmhub-autolog.err";
 
-// ————— helpers —————
-function ensureDirs() {
-  mkdirSync(LAUNCH_AGENTS_DIR, { recursive: true });
-  mkdirSync(SCRIPT_DIR, { recursive: true });
-}
+const LAUNCH_AGENTS_DIR = join(homedir(), "Library", "LaunchAgents");
+const PLIST_PATH = join(LAUNCH_AGENTS_DIR, `${LABEL}.plist`);
+const SCRIPT_DIR = join(app.getPath("userData"), "scripts");
+const SCRIPT_PATH = join(SCRIPT_DIR, "pmhub-autolog.sh");
 
-function writeScript({ oneshot }: { oneshot: boolean }) {
-  // Tự gỡ agent sau khi chạy nếu là one-shot
+function guiDomain(): string {
+  try {
+    const uid = Number(
+      execFileSync("/usr/bin/id", ["-u"], { encoding: "utf8" }).trim()
+    );
+    return `gui/${uid}`;
+  } catch {
+    return "gui/502";
+  }
+}
+const GUI_DOMAIN = guiDomain();
+
+export function writeScript({ oneshot }: { oneshot: boolean }) {
+  mkdirSync(SCRIPT_DIR, { recursive: true });
+
   const removeAfter = oneshot
     ? `
 /bin/launchctl bootout ${GUI_DOMAIN} ${LABEL} >/dev/null 2>&1 || true
@@ -39,25 +48,56 @@ function writeScript({ oneshot }: { oneshot: boolean }) {
 `
     : "";
 
+  // Dùng APP_ID để quit chuẩn xác, và dùng APP_BUNDLE_PATH để open đúng bản hiện tại
   const content = `#!/bin/zsh
 set -euo pipefail
-${BASE_CMD}
+
+APP_ID='${APP_ID}'
+APP_NAME='${APP_NAME}'
+APP_PATH='${APP_BUNDLE_PATH}'
+
+# 1) Nếu bundle không còn -> gỡ lịch & xóa plist để ngừng spam
+if [ ! -d "$APP_PATH" ]; then
+  /bin/launchctl bootout ${GUI_DOMAIN} ${LABEL} >/dev/null 2>&1 || true
+  /bin/rm -f "${PLIST_PATH}" || true
+  exit 0
+fi
+
+# 2) Tắt app nếu đang chạy (dựa trên bundle id)
+osascript -e 'tell application id "'$APP_ID'" to quit' >/dev/null 2>&1 || true
+
+# 3) Mở đúng bundle theo đường dẫn tuyệt đối
+/usr/bin/open -n "$APP_PATH" --args --silent
+
 ${removeAfter}
 `;
-  writeFileSync(SCRIPT_PATH, content, { encoding: "utf8" });
+  writeFileSync(SCRIPT_PATH, content, "utf8");
   chmodSync(SCRIPT_PATH, 0o755);
 }
 
-function bootoutIfLoaded() {
-  // Gỡ nếu đang tồn tại (tránh “already bootstrapped”)
-  spawnSync("/bin/launchctl", ["bootout", `${GUI_DOMAIN}/${LABEL}`], {
-    stdio: "ignore",
-  });
+// ————— helpers —————
+function ensureDirs() {
+  mkdirSync(LAUNCH_AGENTS_DIR, { recursive: true });
+  mkdirSync(SCRIPT_DIR, { recursive: true });
 }
 
-function bootstrapPlist() {
+// Gỡ nếu đang tồn tại (tránh “already bootstrapped”)
+function bootoutIfLoaded() {
+  try {
+    spawnSync("/bin/launchctl", ["bootout", `${GUI_DOMAIN}/${LABEL}`], {
+      stdio: "ignore",
+    });
+  } catch {
+    /* no-op */
+  }
+}
+
+// 2) Bootstrap an toàn (chỉ bootstrap khi plist tồn tại)
+export function bootstrapPlist() {
+  // tránh “already bootstrapped”
+  bootoutIfLoaded();
+  if (!existsSync(PLIST_PATH)) return;
   execFileSync("/bin/launchctl", ["bootstrap", GUI_DOMAIN, PLIST_PATH]);
-  // Bật service và đảm bảo sẵn sàng
   spawnSync("/bin/launchctl", ["enable", `${GUI_DOMAIN}/${LABEL}`], {
     stdio: "ignore",
   });
@@ -115,7 +155,6 @@ export function installMonthly({
   const plist = buildPlistXML(start, false);
   writeFileSync(PLIST_PATH, plist, "utf8");
 
-  bootoutIfLoaded();
   bootstrapPlist();
 }
 
@@ -140,7 +179,6 @@ export function installDaily({
   const plist = buildPlistXML(start, false);
   writeFileSync(PLIST_PATH, plist, "utf8");
 
-  bootoutIfLoaded();
   bootstrapPlist();
 }
 
@@ -173,7 +211,6 @@ export function installOnce(at: Date) {
   const plist = buildPlistXML(start, false);
   writeFileSync(PLIST_PATH, plist, "utf8");
 
-  bootoutIfLoaded();
   bootstrapPlist();
 }
 
@@ -211,19 +248,12 @@ type SCI = {
   Month?: number;
   Weekday?: number;
 };
-type NextRunKind = "daily" | "weekly" | "monthly" | "yearly" | "unknown";
-
-export interface NextRunEstimate {
-  kind: NextRunKind | "mixed";
-  nextRunAt: string | null; // ISO string local time
-  intervals: SCI[];
-}
 
 function daysInMonth(year: number, monthIndex0: number) {
   return new Date(year, monthIndex0 + 1, 0).getDate();
 }
 
-function classifySCI(sci: SCI): NextRunKind {
+function classifySCI(sci: SCI): ScheduleKind {
   if (sci?.Month != null && sci?.Day != null) return "yearly"; // launchd sẽ lặp hằng năm
   if (sci?.Day != null) return "monthly";
   if (sci?.Weekday != null) return "weekly";
@@ -325,7 +355,11 @@ function readPlistJSON(): {
 }
 
 // ——— tính next run từ StartCalendarInterval (dict hoặc array)
-export function getNextRunEstimate(): NextRunEstimate {
+export function getNextRunEstimate(): {
+  kind: ScheduleKind | "mixed";
+  nextRunAt: string | null; // ISO string local time
+  intervals: SCI[];
+} {
   const plist = readPlistJSON();
   if (!plist?.StartCalendarInterval)
     return { kind: "unknown", nextRunAt: null, intervals: [] };
@@ -335,7 +369,7 @@ export function getNextRunEstimate(): NextRunEstimate {
     : [plist.StartCalendarInterval];
 
   let best: Date | null = null;
-  const kinds = new Set<NextRunKind>();
+  const kinds = new Set<ScheduleKind>();
 
   for (const sci of sciList) {
     const kind = classifySCI(sci);
@@ -372,4 +406,38 @@ export function getNextRunEstimate(): NextRunEstimate {
     nextRunAt: best ? best.toISOString() : null,
     intervals: sciList,
   };
+}
+
+// 3) Kickstart đúng label/domain
+export function kickstart() {
+  try {
+    execFileSync("/bin/launchctl", [
+      "kickstart",
+      "-k",
+      `${GUI_DOMAIN}/${LABEL}`,
+    ]);
+  } catch {
+    // nếu chưa load, ignore
+  }
+}
+
+// 4) Print job: không hardcode, luôn try/catch
+export function printJob(): string {
+  try {
+    return execFileSync("/bin/launchctl", ["print", `${GUI_DOMAIN}/${LABEL}`], {
+      encoding: "utf8",
+    });
+  } catch (e: any) {
+    const msg = (e?.stdout || e?.message || "").toString().trim();
+    return msg ? `not loaded: ${msg}` : "not loaded";
+  }
+}
+
+// 5) List jobs: giữ nguyên; có thể dùng để debug
+export function listJobs(): string {
+  try {
+    return execFileSync("/bin/launchctl", ["list"], { encoding: "utf8" });
+  } catch {
+    return "";
+  }
 }
