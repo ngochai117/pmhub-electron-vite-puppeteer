@@ -1,5 +1,5 @@
 import { app } from "electron";
-import fs from "fs";
+import fs from "node:fs";
 import { logJson } from "./logger";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -20,7 +20,7 @@ export function getConfigPath(fileName: string) {
     : path.join(app.getPath("userData"), fileName);
 }
 
-export async function writeFile(fileName: string, data: any): Promise<void> {
+export function writeFile(fileName: string, data: any) {
   const configPath = getConfigPath(fileName);
 
   const dir = path.dirname(configPath);
@@ -28,18 +28,20 @@ export async function writeFile(fileName: string, data: any): Promise<void> {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  await fs.promises.writeFile(configPath, data, "utf-8").catch((e) => {
+  try {
+    fs.writeFileSync(configPath, data, "utf-8");
+  } catch (e) {
     logJson({ fn: "writeFile", level: "error", msg: e });
-    return {};
-  });
+  }
 }
 
 export async function readFile(fileName: string): Promise<string> {
   const configPath = getConfigPath(fileName);
-  return await fs.promises.readFile(configPath, "utf-8").catch((e) => {
-    logJson({ fn: "readFile", level: "error", msg: e });
-    return "";
-  });
+  return fs.existsSync(configPath) ? fs.readFileSync(configPath, "utf8") : "";
+  // return await fs.promises.readFile(configPath, "utf-8").catch((e) => {
+  //   logJson({ fn: "readFile", level: "error", msg: e });
+  //   return "";
+  // });
 }
 
 // export async function writeJsonFile(
