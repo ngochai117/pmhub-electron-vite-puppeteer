@@ -124,8 +124,9 @@ export default class Dashboard {
     let foundProjectId = false;
     const items = await this.page.$$(".mud-list .mud-list-item");
     for (const item of items) {
-      const text = await item.evaluate((el) => el.textContent);
-      if (text?.includes(log.projectId)) {
+      const text = await item.evaluate((el) => el.textContent?.trim());
+      const firstNumberMatch = text?.match(/^\s*(\d+)/);
+      if (firstNumberMatch && firstNumberMatch[1] === String(log.projectId)) {
         await item.click();
         await this.waitSelector(".mud-list .mud-list-item", false);
         foundProjectId = true;
@@ -225,6 +226,14 @@ export default class Dashboard {
       Array.from(actualMap1.values()).reduce((a, b) => a + b, 0)
     );
     console.log("📌 Cần thêm:", missingLogs1);
+    if (missingLogs1?.length === 0) {
+      return {
+        success: false,
+        title: translate("log_error"),
+        msg: translate("log_error_full"),
+      };
+    }
+
     await this.logMissingLogs(missingLogs1);
 
     console.log("----Done lần đầu----");

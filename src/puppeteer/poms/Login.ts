@@ -12,11 +12,16 @@ import { logJson } from "../../utils/logger";
 const checkLoginResult = async (page: Page, timeout = 10000) => {
   logJson({ fn: "checkLoginResult" });
 
-  const redirected = page
-    .waitForFunction(() => !window.location.href.includes(PATHS.LOGIN), {
-      timeout,
-    })
-    .then(() => true);
+  const waitForShowDashboard = page
+    .waitForFunction(
+      () =>
+        [...document.body.querySelectorAll("*")].some((el) =>
+          el.textContent?.includes("My work")
+        ),
+      { timeout: timeout }
+    )
+    .then(() => true)
+    .catch(() => false);
 
   const waitForShowError = page
     .waitForFunction(
@@ -30,7 +35,7 @@ const checkLoginResult = async (page: Page, timeout = 10000) => {
     .catch(() => true);
 
   const status = await Promise.race([
-    redirected,
+    waitForShowDashboard,
     waitForShowError,
     delay(timeout).then(() => false),
   ]);
@@ -53,11 +58,9 @@ export default class Login {
     await delay(DELAY_VISIBLE_VIEW_TIME);
     await typing(this.page, ELEMENTS.INPUT_USERNAME, username);
     await typing(this.page, ELEMENTS.INPUT_PASSWORD, password);
+
     await click(this.page, ELEMENTS.BUTTON_LOGIN);
-
-    const success = await checkLoginResult(this.page);
-
-    return success;
+    return await checkLoginResult(this.page);
   }
 
   async checkAndLogin(username: string, password: string) {

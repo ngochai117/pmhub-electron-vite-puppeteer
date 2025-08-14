@@ -19,9 +19,11 @@ const LOCALIZE = {
   login_fail_desc: "Vui lòng kiểm tra lại username, password",
 
   not_found_range_time: "Không tìm thấy range time",
-  not_found_project: "Không tìm thấy {{id}}. Vui lòng kiểm tra lại",
+  not_found_project: "Không tìm thấy project id {{id}}. Vui lòng kiểm tra lại",
 
   log_error: "Log work thất bại",
+  log_error_full:
+    "Đã đủ log work cho các project, vui lòng xóa trước khi bạn muốn tiếp tục",
   log_success: "Log work thành công",
   log_success_desc: "Hãy kiểm tra lại cho chắc chắn nhé",
 
